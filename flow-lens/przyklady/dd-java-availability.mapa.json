@@ -1,0 +1,136 @@
+{
+ "projekt": "dd-java",
+ "technologie": [
+  "spring",
+  "java"
+ ],
+ "klasy": {
+  "domaindrivers.smartschedule.availability.AvailabilityFacade": {
+   "rola": "aplikacja",
+   "nazwa": "AvailabilityFacade",
+   "powod": "java: nazwa fasady / serwisu aplikacyjnego",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/main/java/domaindrivers/smartschedule/availability/AvailabilityFacade.java:16",
+   "poziom": 1,
+   "metody": [
+    "block",
+    "blockRandomAvailable",
+    "createResourceSlots",
+    "disable",
+    "find",
+    "findByParentId",
+    "findGrouped",
+    "loadCalendar",
+    "loadCalendars",
+    "release"
+   ],
+   "transakcyjne": [
+    "block",
+    "blockRandomAvailable",
+    "disable",
+    "release"
+   ]
+  },
+  "domaindrivers.smartschedule.availability.ResourceGroupedAvailability": {
+   "rola": "domena",
+   "nazwa": "ResourceGroupedAvailability",
+   "powod": "java: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/main/java/domaindrivers/smartschedule/availability/ResourceGroupedAvailability.java:14",
+   "poziom": 2,
+   "metody": [
+    "availabilities",
+    "block",
+    "blockedEntirelyBy",
+    "disable",
+    "findBlockedBy",
+    "isDisabledEntirelyBy",
+    "isEntirelyAvailable",
+    "isEntirelyWithParentId",
+    "of",
+    "owners",
+    "release",
+    "resourceId",
+    "size"
+   ]
+  },
+  "domaindrivers.smartschedule.availability.segment.Segments": {
+   "rola": "domena",
+   "nazwa": "Segments",
+   "powod": "java: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/main/java/domaindrivers/smartschedule/availability/segment/Segments.java:7",
+   "poziom": 3,
+   "metody": [
+    "normalizeToSegmentBoundaries",
+    "split"
+   ]
+  },
+  "domaindrivers.smartschedule.availability.segment.SlotToNormalizedSlot": {
+   "rola": "domena",
+   "nazwa": "SlotToNormalizedSlot",
+   "powod": "java: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/main/java/domaindrivers/smartschedule/availability/segment/SlotToNormalizedSlot.java:9",
+   "poziom": 2,
+   "metody": [
+    "apply",
+    "normalizeEnd",
+    "normalizeStart"
+   ]
+  },
+  "domaindrivers.smartschedule.availability.segment.SlotToSegments": {
+   "rola": "domena",
+   "nazwa": "SlotToSegments",
+   "powod": "java: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/main/java/domaindrivers/smartschedule/availability/segment/SlotToSegments.java:12",
+   "poziom": 2,
+   "metody": [
+    "apply",
+    "calculateEnd",
+    "calculateNumberOfSegments"
+   ]
+  },
+  "domaindrivers.smartschedule.availability.ResourceId": {
+   "rola": "domena",
+   "nazwa": "ResourceId",
+   "powod": "spring: encja @Embeddable",
+   "pewnosc": "pewne",
+   "plik": "src/main/java/domaindrivers/smartschedule/availability/ResourceId.java:9",
+   "poziom": 5,
+   "metody": [
+    "newOne",
+    "none",
+    "of"
+   ]
+  },
+  "domaindrivers.smartschedule.availability.ResourceAvailabilityReadModel": {
+   "rola": "domena",
+   "nazwa": "ResourceAvailabilityReadModel",
+   "powod": "java: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/main/java/domaindrivers/smartschedule/availability/ResourceAvailabilityReadModel.java:13",
+   "poziom": 2,
+   "metody": [
+    "load",
+    "loadAll"
+   ]
+  },
+  "domaindrivers.smartschedule.availability.ResourceAvailability": {
+   "rola": "domena",
+   "nazwa": "ResourceAvailability",
+   "powod": "java: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/main/java/domaindrivers/smartschedule/availability/ResourceAvailability.java:7",
+   "poziom": 3,
+   "metody": [
+    "block",
+    "blockedBy",
+    "disable",
+    "enable",
+    "release"
+   ]
+  }
+ }
+}

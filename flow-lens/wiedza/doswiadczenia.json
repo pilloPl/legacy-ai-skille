@@ -1,0 +1,1898 @@
+{
+ "_opis": "Tryby flow-lens zmierzone względem wyroczni OTel na korpusie (trening/doswiadczenia.mjs). Potwierdzenia człowieka są lokalnie w ~/.flow-lens/doswiadczenia.json (potwierdz.mjs).",
+ "doswiadczenia": [
+  {
+   "repo": "trening/aplikacje/dotnet-efcore",
+   "grupa": "dotnet-efcore",
+   "skladniki": [
+    "aspnet",
+    "efcore",
+    "dapper",
+    "npgsql",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel + metody z kopii",
+   "wyrocznia_niezalezna": false,
+   "data": "2026-10-21",
+   "tryby": {
+    "OTel": {
+     "pary": 12,
+     "brak": 2,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 0.417
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 14,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi frameworka": {
+     "pary": 14,
+     "brak": 0,
+     "sciezka": 0.279,
+     "klasyRecall": 0.279,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.833,
+     "sqlPrecision": 1,
+     "txLiczba": 0.929
+    },
+    "logi + szkielet": {
+     "pary": 14,
+     "brak": 0,
+     "sciezka": 0.724,
+     "klasyRecall": 0.724,
+     "klasyPrecision": 0.988,
+     "sqlRecall": 0.833,
+     "sqlPrecision": 1,
+     "txLiczba": 0.929
+    },
+    "logi + szkielet + między": {
+     "pary": 14,
+     "brak": 0,
+     "sciezka": 0.773,
+     "klasyRecall": 0.811,
+     "klasyPrecision": 0.952,
+     "sqlRecall": 0.833,
+     "sqlPrecision": 1,
+     "txLiczba": 0.929
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 13,
+     "brak": 1,
+     "sciezka": 0.815,
+     "klasyRecall": 0.883,
+     "klasyPrecision": 0.908,
+     "sqlRecall": 0.923,
+     "sqlPrecision": 1,
+     "txLiczba": 0.923
+    }
+   }
+  },
+  {
+   "repo": "trening/aplikacje/java-ee-stara",
+   "grupa": "java-ee-stara",
+   "skladniki": [
+    "spring",
+    "spring-jdbc",
+    "otel-java",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "wstrzyknięcie / hak": {
+     "pary": 19,
+     "brak": 0,
+     "sciezka": 0.919,
+     "klasyRecall": 0.919,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.941,
+     "sqlPrecision": 1,
+     "txLiczba": 0.941
+    }
+   }
+  },
+  {
+   "repo": "trening/aplikacje/java-messaging",
+   "grupa": "java-messaging",
+   "skladniki": [
+    "spring-boot",
+    "hibernate",
+    "kafka-java",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 18,
+     "brak": 1,
+     "sciezka": 0.653,
+     "klasyRecall": 0.653,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 18,
+     "brak": 1,
+     "sciezka": 0.748,
+     "klasyRecall": 0.748,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 18,
+     "brak": 1,
+     "sciezka": 0.793,
+     "klasyRecall": 0.793,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 19,
+     "brak": 0,
+     "sciezka": 0.908,
+     "klasyRecall": 0.908,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 17,
+     "brak": 2,
+     "sciezka": 0.862,
+     "klasyRecall": 0.921,
+     "klasyPrecision": 0.941,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "trening/aplikacje/java-spring",
+   "grupa": "java-spring",
+   "skladniki": [
+    "spring-boot",
+    "hibernate",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 13,
+     "brak": 0,
+     "sciezka": 0.547,
+     "klasyRecall": 0.547,
+     "klasyPrecision": 0.937,
+     "sqlRecall": 0.923,
+     "sqlPrecision": 0.93,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 13,
+     "brak": 0,
+     "sciezka": 0.78,
+     "klasyRecall": 0.78,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.923,
+     "sqlPrecision": 0.93,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 13,
+     "brak": 0,
+     "sciezka": 0.8,
+     "klasyRecall": 0.8,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.923,
+     "sqlPrecision": 0.93,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 13,
+     "brak": 0,
+     "sciezka": 0.878,
+     "klasyRecall": 0.878,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.923,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + access log + szkielet": {
+     "pary": 13,
+     "brak": 0,
+     "sciezka": 0.708,
+     "klasyRecall": 0.765,
+     "klasyPrecision": 0.955,
+     "sqlRecall": 1,
+     "sqlPrecision": 0.93,
+     "txLiczba": 0.846
+    }
+   }
+  },
+  {
+   "repo": "trening/aplikacje/node-express-prisma",
+   "grupa": "node-express-prisma",
+   "skladniki": [
+    "express",
+    "prisma",
+    "knex",
+    "pg-node",
+    "otel-node",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 14,
+     "brak": 1,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.896,
+     "sqlPrecision": 1,
+     "txLiczba": 0.929
+    },
+    "logi + szkielet": {
+     "pary": 14,
+     "brak": 1,
+     "sciezka": 0.693,
+     "klasyRecall": 0.693,
+     "klasyPrecision": 0.955,
+     "sqlRecall": 0.896,
+     "sqlPrecision": 1,
+     "txLiczba": 0.929
+    },
+    "logi + szkielet + między": {
+     "pary": 14,
+     "brak": 1,
+     "sciezka": 0.739,
+     "klasyRecall": 0.769,
+     "klasyPrecision": 0.962,
+     "sqlRecall": 0.896,
+     "sqlPrecision": 1,
+     "txLiczba": 0.929
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0.957,
+     "klasyRecall": 0.957,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + access log + szkielet": {
+     "pary": 14,
+     "brak": 1,
+     "sciezka": 0.789,
+     "klasyRecall": 0.944,
+     "klasyPrecision": 0.834,
+     "sqlRecall": 0.964,
+     "sqlPrecision": 1,
+     "txLiczba": 0.929
+    }
+   }
+  },
+  {
+   "repo": "trening/aplikacje/node-nest-typeorm",
+   "grupa": "node-nest-typeorm",
+   "skladniki": [
+    "nest",
+    "typeorm",
+    "pg-node",
+    "otel-node",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.9,
+     "sqlPrecision": 0.956,
+     "txLiczba": 0.8
+    },
+    "logi + szkielet": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0.594,
+     "klasyRecall": 0.594,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.867,
+     "sqlPrecision": 0.911,
+     "txLiczba": 0.733
+    },
+    "logi + szkielet + między": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0.532,
+     "klasyRecall": 0.801,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.867,
+     "sqlPrecision": 0.911,
+     "txLiczba": 0.733
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0.79,
+     "klasyRecall": 0.79,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0.587,
+     "klasyRecall": 0.902,
+     "klasyPrecision": 0.99,
+     "sqlRecall": 0.933,
+     "sqlPrecision": 1,
+     "txLiczba": 0.933
+    }
+   }
+  },
+  {
+   "repo": "trening/aplikacje/php-laravel",
+   "grupa": "php-laravel",
+   "skladniki": [
+    "laravel",
+    "pdo",
+    "otel-php",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 17,
+     "brak": 0,
+     "sciezka": 0.463,
+     "klasyRecall": 0.463,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 17,
+     "brak": 0,
+     "sciezka": 0.751,
+     "klasyRecall": 0.751,
+     "klasyPrecision": 0.985,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 17,
+     "brak": 0,
+     "sciezka": 0.785,
+     "klasyRecall": 0.793,
+     "klasyPrecision": 0.98,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 17,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 15,
+     "brak": 1,
+     "sciezka": 0.794,
+     "klasyRecall": 0.832,
+     "klasyPrecision": 0.971,
+     "sqlRecall": 1,
+     "sqlPrecision": 0.975,
+     "txLiczba": 0.933
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/realworld-apps/aspnetcore-realworld-example-app",
+   "rewizja": "8aa617abed5dd645f8f9d99578a3e07b4e2e52e7",
+   "grupa": "pub-aspnet-realworld",
+   "skladniki": [
+    "aspnet",
+    "mediatr",
+    "efcore",
+    "sqlserver",
+    "w-pamieci"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel + metody z kopii",
+   "wyrocznia_niezalezna": false,
+   "data": "2026-10-21",
+   "tryby": {
+    "OTel": {
+     "pary": 28,
+     "brak": 0,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi frameworka": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 0.092,
+     "klasyRecall": 0.092,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.996,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 0.498,
+     "klasyRecall": 0.503,
+     "klasyPrecision": 0.975,
+     "sqlRecall": 0.996,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 0.382,
+     "klasyRecall": 0.666,
+     "klasyPrecision": 0.868,
+     "sqlRecall": 0.996,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/BookStackApp/BookStack",
+   "rewizja": "045c6a98cac21ea86906674bb91d01f375460db6",
+   "grupa": "pub-bookstack",
+   "skladniki": [
+    "laravel",
+    "mysql"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 20,
+     "brak": 0,
+     "sciezka": 0.064,
+     "klasyRecall": 0.064,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.885,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 20,
+     "brak": 0,
+     "sciezka": 0.098,
+     "klasyRecall": 0.101,
+     "klasyPrecision": 0.711,
+     "sqlRecall": 0.885,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 20,
+     "brak": 0,
+     "sciezka": 0.12,
+     "klasyRecall": 0.136,
+     "klasyPrecision": 0.742,
+     "sqlRecall": 0.885,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 20,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 0.999,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/eclipse-ee4j/cargotracker",
+   "rewizja": "4d26b8fd59a7f0bac6e42d5d19a8cd1b379353b5",
+   "grupa": "pub-cargotracker",
+   "skladniki": [
+    "jakarta-ee",
+    "payara",
+    "eclipselink",
+    "jms",
+    "postgres",
+    "w-pamieci"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 12,
+     "brak": 30,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.9,
+     "sqlPrecision": 0.759,
+     "txLiczba": 0.5
+    },
+    "logi + szkielet": {
+     "pary": 11,
+     "brak": 31,
+     "sciezka": 0.075,
+     "klasyRecall": 0.131,
+     "klasyPrecision": 0.55,
+     "sqlRecall": 0.826,
+     "sqlPrecision": 0.784,
+     "txLiczba": 0.455
+    },
+    "logi + szkielet + między": {
+     "pary": 11,
+     "brak": 31,
+     "sciezka": 0.075,
+     "klasyRecall": 0.131,
+     "klasyPrecision": 0.55,
+     "sqlRecall": 0.826,
+     "sqlPrecision": 0.784,
+     "txLiczba": 0.455
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 35,
+     "brak": 7,
+     "sciezka": 0.958,
+     "klasyRecall": 0.959,
+     "klasyPrecision": 0.999,
+     "sqlRecall": 0.967,
+     "sqlPrecision": 0.998,
+     "txLiczba": 0.943
+    },
+    "log bazy + access log + szkielet": {
+     "pary": 13,
+     "brak": 29,
+     "sciezka": 0.598,
+     "klasyRecall": 0.647,
+     "klasyPrecision": 0.859,
+     "sqlRecall": 0.885,
+     "sqlPrecision": 0.877,
+     "txLiczba": 0.462
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/cosmicpython/code",
+   "rewizja": "14c84797ffa77255d53cf1a02fe6aafda2b68aeb",
+   "grupa": "pub-cosmicpython",
+   "skladniki": [
+    "flask",
+    "sqlalchemy",
+    "psycopg",
+    "postgres",
+    "w-pamieci"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 12,
+     "brak": 1,
+     "sciezka": 0.115,
+     "klasyRecall": 0.115,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.923,
+     "sqlPrecision": 1,
+     "txLiczba": 0.917
+    },
+    "logi + szkielet": {
+     "pary": 13,
+     "brak": 0,
+     "sciezka": 0.643,
+     "klasyRecall": 0.771,
+     "klasyPrecision": 0.779,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 13,
+     "brak": 0,
+     "sciezka": 0.666,
+     "klasyRecall": 0.798,
+     "klasyPrecision": 0.722,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 13,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 13,
+     "brak": 0,
+     "sciezka": 0.422,
+     "klasyRecall": 0.902,
+     "klasyPrecision": 0.542,
+     "sqlRecall": 1,
+     "sqlPrecision": 0.995,
+     "txLiczba": 0.923
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/ddd-by-examples/library",
+   "rewizja": "5225ff7a0f0c1e0751b91cdd64f925cd001d7555",
+   "grupa": "pub-ddd-library",
+   "skladniki": [
+    "spring-boot",
+    "w-pamieci"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 12,
+     "brak": 3,
+     "sciezka": 0.201,
+     "klasyRecall": 0.201,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 0.972,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 12,
+     "brak": 3,
+     "sciezka": 0.614,
+     "klasyRecall": 0.614,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 0.972,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 12,
+     "brak": 3,
+     "sciezka": 0.693,
+     "klasyRecall": 0.721,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 0.972,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/HackSoftware/Django-Styleguide-Example",
+   "rewizja": "a70ef43d7df03706c1211d4fcfd70b4b0120ba1e",
+   "grupa": "pub-django-styleguide",
+   "skladniki": [
+    "django",
+    "psycopg",
+    "celery",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 37,
+     "brak": 1,
+     "sciezka": 0.279,
+     "klasyRecall": 0.279,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 0.977,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 37,
+     "brak": 1,
+     "sciezka": 0.636,
+     "klasyRecall": 0.65,
+     "klasyPrecision": 0.95,
+     "sqlRecall": 1,
+     "sqlPrecision": 0.977,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 37,
+     "brak": 1,
+     "sciezka": 0.636,
+     "klasyRecall": 0.65,
+     "klasyPrecision": 0.95,
+     "sqlRecall": 1,
+     "sqlPrecision": 0.977,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 38,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 38,
+     "brak": 0,
+     "sciezka": 0.616,
+     "klasyRecall": 0.79,
+     "klasyPrecision": 0.757,
+     "sqlRecall": 0.961,
+     "sqlPrecision": 0.909,
+     "txLiczba": 0.947
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/kgrzybek/sample-dotnet-core-cqrs-api",
+   "rewizja": "2f00e194e72e9288dddd69af499fc97920cba86e",
+   "grupa": "pub-dotnet-cqrs",
+   "skladniki": [
+    "aspnet",
+    "mediatr",
+    "efcore",
+    "dapper",
+    "sqlserver"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel + metody z kopii",
+   "wyrocznia_niezalezna": false,
+   "data": "2026-10-21",
+   "tryby": {
+    "OTel": {
+     "pary": 14,
+     "brak": 6,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 0.571
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 20,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi frameworka": {
+     "pary": 14,
+     "brak": 6,
+     "sciezka": 0.205,
+     "klasyRecall": 0.205,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.071,
+     "sqlPrecision": 1,
+     "txLiczba": 0.571
+    },
+    "logi + szkielet": {
+     "pary": 14,
+     "brak": 6,
+     "sciezka": 0.224,
+     "klasyRecall": 0.224,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.071,
+     "sqlPrecision": 1,
+     "txLiczba": 0.571
+    },
+    "logi + szkielet + między": {
+     "pary": 14,
+     "brak": 6,
+     "sciezka": 0.227,
+     "klasyRecall": 0.266,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.071,
+     "sqlPrecision": 1,
+     "txLiczba": 0.571
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 20,
+     "brak": 0,
+     "sciezka": 0.488,
+     "klasyRecall": 0.832,
+     "klasyPrecision": 0.754,
+     "sqlRecall": 0.904,
+     "sqlPrecision": 0.95,
+     "txLiczba": 0.9
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/dotnet-architecture/eShopOnWeb",
+   "rewizja": "4da8212117e87d808d4bbc7da6286fd2147ce606",
+   "grupa": "pub-eshoponweb",
+   "skladniki": [
+    "aspnet",
+    "mediatr",
+    "efcore",
+    "sqlserver"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel + metody z kopii",
+   "wyrocznia_niezalezna": false,
+   "data": "2026-10-21",
+   "tryby": {
+    "OTel": {
+     "pary": 16,
+     "brak": 9,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 0.813
+    },
+    "logi frameworka": {
+     "pary": 16,
+     "brak": 9,
+     "sciezka": 0.124,
+     "klasyRecall": 0.124,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.938,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 16,
+     "brak": 9,
+     "sciezka": 0.182,
+     "klasyRecall": 0.182,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.938,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 16,
+     "brak": 9,
+     "sciezka": 0.182,
+     "klasyRecall": 0.182,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.938,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 25,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 16,
+     "brak": 9,
+     "sciezka": 0.381,
+     "klasyRecall": 0.679,
+     "klasyPrecision": 0.591,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/gothinkster/node-express-realworld-example-app",
+   "rewizja": "30b68e1e881462b2f4164ea09ab4c4f5699c7b0b",
+   "grupa": "pub-express-realworld",
+   "skladniki": [
+    "express",
+    "prisma"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 0.069,
+     "klasyRecall": 0.069,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.069,
+     "sqlPrecision": 1,
+     "txLiczba": 0.621
+    },
+    "logi + szkielet": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 0.069,
+     "klasyRecall": 0.069,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.069,
+     "sqlPrecision": 1,
+     "txLiczba": 0.621
+    },
+    "logi + szkielet + między": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 0.069,
+     "klasyRecall": 0.069,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.069,
+     "sqlPrecision": 1,
+     "txLiczba": 0.621
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 0.879,
+     "klasyRecall": 0.914,
+     "klasyPrecision": 0.966,
+     "sqlRecall": 0.778,
+     "sqlPrecision": 0.842,
+     "txLiczba": 0.862
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/nsidnev/fastapi-realworld-example-app",
+   "rewizja": "029eb7781c60d5f563ee8990a0cbfb79b244538c",
+   "grupa": "pub-fastapi-realworld",
+   "skladniki": [
+    "fastapi",
+    "asyncpg",
+    "psycopg",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 35,
+     "brak": 0,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 0.971,
+     "sqlRecall": 0.029,
+     "sqlPrecision": 1,
+     "txLiczba": 0.714
+    },
+    "logi + szkielet": {
+     "pary": 35,
+     "brak": 0,
+     "sciezka": 0.056,
+     "klasyRecall": 0.056,
+     "klasyPrecision": 0.971,
+     "sqlRecall": 0.029,
+     "sqlPrecision": 1,
+     "txLiczba": 0.714
+    },
+    "logi + szkielet + między": {
+     "pary": 35,
+     "brak": 0,
+     "sciezka": 0.056,
+     "klasyRecall": 0.056,
+     "klasyPrecision": 0.971,
+     "sqlRecall": 0.029,
+     "sqlPrecision": 1,
+     "txLiczba": 0.714
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 35,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 35,
+     "brak": 0,
+     "sciezka": 0.413,
+     "klasyRecall": 0.708,
+     "klasyPrecision": 0.811,
+     "sqlRecall": 1,
+     "sqlPrecision": 0.995,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/fastapi/full-stack-fastapi-template",
+   "rewizja": "b1125d8839482cb7bbae603ddc6d0081bf87532e",
+   "grupa": "pub-fastapi-sqlmodel",
+   "skladniki": [
+    "fastapi",
+    "sqlalchemy",
+    "psycopg",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 53,
+     "brak": 0,
+     "sciezka": 0.019,
+     "klasyRecall": 0.019,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.962,
+     "sqlPrecision": 0.962,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 53,
+     "brak": 0,
+     "sciezka": 0.239,
+     "klasyRecall": 0.239,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.962,
+     "sqlPrecision": 0.962,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 53,
+     "brak": 0,
+     "sciezka": 0.241,
+     "klasyRecall": 0.265,
+     "klasyPrecision": 0.991,
+     "sqlRecall": 0.962,
+     "sqlPrecision": 0.962,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 53,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 53,
+     "brak": 0,
+     "sciezka": 0.338,
+     "klasyRecall": 0.691,
+     "klasyPrecision": 0.956,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/fastify/demo",
+   "rewizja": "5cd560125b3c2f0d42192bc7f493e8e3b9e75e52",
+   "grupa": "pub-fastify-demo",
+   "skladniki": [
+    "fastify",
+    "knex",
+    "mysql2",
+    "mysql"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 20,
+     "brak": 1,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.95,
+     "sqlPrecision": 0.95,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 20,
+     "brak": 1,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.95,
+     "sqlPrecision": 0.95,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 20,
+     "brak": 1,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.95,
+     "sqlPrecision": 0.95,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 21,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.95,
+     "sqlPrecision": 0.95,
+     "txLiczba": 1
+    },
+    "log bazy + access log + szkielet": {
+     "pary": 20,
+     "brak": 1,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.95,
+     "sqlPrecision": 0.95,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/mybatis/jpetstore-6",
+   "rewizja": "6b0ac6a02aa7ccc530d3231506a95999bbc04810",
+   "grupa": "pub-jpetstore",
+   "skladniki": [
+    "spring",
+    "mybatis",
+    "spring-jdbc",
+    "stripes",
+    "w-pamieci"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 0.413,
+     "klasyRecall": 0.482,
+     "klasyPrecision": 0.623,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 0.487,
+     "klasyRecall": 0.692,
+     "klasyPrecision": 0.718,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 0.483,
+     "klasyRecall": 0.701,
+     "klasyPrecision": 0.71,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 29,
+     "brak": 0,
+     "sciezka": 0.745,
+     "klasyRecall": 1,
+     "klasyPrecision": 0.745,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/kanboard/kanboard",
+   "rewizja": "e4fb64e972b0ae255a92cf4b7b03489846ebbffc",
+   "grupa": "pub-kanboard",
+   "skladniki": [
+    "pdo",
+    "postgres",
+    "mysql",
+    "w-pamieci",
+    "php-bez-frameworka"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 21,
+     "brak": 0,
+     "sciezka": 0.016,
+     "klasyRecall": 0.016,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.735,
+     "sqlPrecision": 1,
+     "txLiczba": 0.333
+    },
+    "logi + szkielet": {
+     "pary": 21,
+     "brak": 0,
+     "sciezka": 0.019,
+     "klasyRecall": 0.023,
+     "klasyPrecision": 0.597,
+     "sqlRecall": 0.735,
+     "sqlPrecision": 1,
+     "txLiczba": 0.333
+    },
+    "logi + szkielet + między": {
+     "pary": 21,
+     "brak": 0,
+     "sciezka": 0.04,
+     "klasyRecall": 0.052,
+     "klasyPrecision": 0.708,
+     "sqlRecall": 0.735,
+     "sqlPrecision": 1,
+     "txLiczba": 0.333
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 21,
+     "brak": 0,
+     "sciezka": 0.937,
+     "klasyRecall": 1,
+     "klasyPrecision": 0.937,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 21,
+     "brak": 0,
+     "sciezka": 0.025,
+     "klasyRecall": 0.035,
+     "klasyPrecision": 0.598,
+     "sqlRecall": 0.755,
+     "sqlPrecision": 0.996,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/javieraviles/node-typescript-koa-rest",
+   "rewizja": "3233861f5894606653bf7114473821a002d91d8b",
+   "grupa": "pub-koa-typeorm",
+   "skladniki": [
+    "koa",
+    "typeorm",
+    "pg-node",
+    "winston",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 24,
+     "brak": 3,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 24,
+     "brak": 3,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 24,
+     "brak": 3,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 27,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 24,
+     "brak": 3,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/mikro-orm/nestjs-realworld-example-app",
+   "rewizja": "bbe2cf0f1bd84a8e364a43a783c7ff26f9c43407",
+   "grupa": "pub-nest-mikroorm",
+   "skladniki": [
+    "nest",
+    "mikroorm",
+    "mysql"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 0,
+     "brak": 31,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 0,
+     "sqlRecall": 0,
+     "sqlPrecision": 0,
+     "txLiczba": 0
+    },
+    "logi + szkielet": {
+     "pary": 0,
+     "brak": 31,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 0,
+     "sqlRecall": 0,
+     "sqlPrecision": 0,
+     "txLiczba": 0
+    },
+    "logi + szkielet + między": {
+     "pary": 0,
+     "brak": 31,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 0,
+     "sqlRecall": 0,
+     "sqlPrecision": 0,
+     "txLiczba": 0
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 31,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka (bez granic requestów) + szkielet": {
+     "pary": 0,
+     "brak": 31,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 0,
+     "sqlRecall": 0,
+     "sqlPrecision": 0,
+     "txLiczba": 0
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/opencart/opencart",
+   "rewizja": "3b0597ec91cae3de040a63fee3834a6d910372ea",
+   "grupa": "pub-opencart",
+   "skladniki": [
+    "pdo",
+    "mysqli",
+    "postgres",
+    "mysql",
+    "php-bez-frameworka"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 0,
+     "brak": 23,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 0,
+     "sqlRecall": 0,
+     "sqlPrecision": 0,
+     "txLiczba": 0
+    },
+    "logi + szkielet": {
+     "pary": 0,
+     "brak": 23,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 0,
+     "sqlRecall": 0,
+     "sqlPrecision": 0,
+     "txLiczba": 0
+    },
+    "logi + szkielet + między": {
+     "pary": 0,
+     "brak": 23,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 0,
+     "sqlRecall": 0,
+     "sqlPrecision": 0,
+     "txLiczba": 0
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 20,
+     "brak": 3,
+     "sciezka": 0.994,
+     "klasyRecall": 1,
+     "klasyPrecision": 0.994,
+     "sqlRecall": 0.994,
+     "sqlPrecision": 0.992,
+     "txLiczba": 1
+    },
+    "log bazy + access log + szkielet": {
+     "pary": 0,
+     "brak": 23,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 0,
+     "sqlRecall": 0,
+     "sqlPrecision": 0,
+     "txLiczba": 0
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/spring-petclinic/spring-petclinic-rest",
+   "rewizja": "afc8fc1d3b8ec8de69414482b3bd70a1da78cb95",
+   "grupa": "pub-petclinic-rest",
+   "skladniki": [
+    "spring-boot",
+    "hibernate",
+    "spring-jdbc",
+    "postgres",
+    "mysql",
+    "w-pamieci"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 17,
+     "brak": 0,
+     "sciezka": 0.703,
+     "klasyRecall": 0.721,
+     "klasyPrecision": 0.971,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 17,
+     "brak": 0,
+     "sciezka": 0.708,
+     "klasyRecall": 0.726,
+     "klasyPrecision": 0.971,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 17,
+     "brak": 0,
+     "sciezka": 0.785,
+     "klasyRecall": 0.802,
+     "klasyPrecision": 0.975,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 17,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + access log + szkielet": {
+     "pary": 17,
+     "brak": 0,
+     "sciezka": 0.738,
+     "klasyRecall": 0.81,
+     "klasyPrecision": 0.897,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/spring-petclinic/spring-framework-petclinic",
+   "rewizja": "cf392920cdbe9cd07689f1f4b603271940bac957",
+   "grupa": "pub-petclinic-xml",
+   "skladniki": [
+    "spring",
+    "hibernate",
+    "spring-jdbc",
+    "postgres",
+    "mysql",
+    "w-pamieci"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 20,
+     "brak": 0,
+     "sciezka": 0.483,
+     "klasyRecall": 0.508,
+     "klasyPrecision": 0.975,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 20,
+     "brak": 0,
+     "sciezka": 0.69,
+     "klasyRecall": 0.773,
+     "klasyPrecision": 0.983,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 20,
+     "brak": 0,
+     "sciezka": 0.729,
+     "klasyRecall": 0.813,
+     "klasyPrecision": 0.988,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 20,
+     "brak": 0,
+     "sciezka": 1,
+     "klasyRecall": 1,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 20,
+     "brak": 0,
+     "sciezka": 0.777,
+     "klasyRecall": 0.871,
+     "klasyPrecision": 0.953,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "https://github.com/CodelyTV/php-ddd-example",
+   "rewizja": "9271c467943f835ab3b6e5ba30bdbd710aca9d73",
+   "grupa": "pub-php-ddd",
+   "skladniki": [
+    "symfony",
+    "doctrine",
+    "mysql"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 18,
+     "brak": 0,
+     "sciezka": 0.066,
+     "klasyRecall": 0.066,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.506,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 18,
+     "brak": 0,
+     "sciezka": 0.115,
+     "klasyRecall": 0.115,
+     "klasyPrecision": 0.982,
+     "sqlRecall": 0.506,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 18,
+     "brak": 0,
+     "sciezka": 0.121,
+     "klasyRecall": 0.123,
+     "klasyPrecision": 0.987,
+     "sqlRecall": 0.506,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 18,
+     "brak": 0,
+     "sciezka": 0.995,
+     "klasyRecall": 0.995,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "trening/aplikacje/python-django",
+   "grupa": "python-django",
+   "skladniki": [
+    "django",
+    "psycopg",
+    "otel-python",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0,
+     "klasyRecall": 0,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.933,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0.745,
+     "klasyRecall": 0.745,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.933,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0.841,
+     "klasyRecall": 0.841,
+     "klasyPrecision": 1,
+     "sqlRecall": 0.933,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0.962,
+     "klasyRecall": 0.962,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0.83,
+     "klasyRecall": 0.843,
+     "klasyPrecision": 0.987,
+     "sqlRecall": 0.933,
+     "sqlPrecision": 0.956,
+     "txLiczba": 1
+    }
+   }
+  },
+  {
+   "repo": "trening/aplikacje/python-fastapi-sqlalchemy",
+   "grupa": "python-fastapi-sqlalchemy",
+   "skladniki": [
+    "fastapi",
+    "sqlalchemy",
+    "asyncpg",
+    "psycopg",
+    "postgres"
+   ],
+   "zrodlo": "otel",
+   "wyrocznia": "OTel",
+   "wyrocznia_niezalezna": true,
+   "data": "2026-10-21",
+   "tryby": {
+    "logi frameworka": {
+     "pary": 14,
+     "brak": 0,
+     "sciezka": 0.107,
+     "klasyRecall": 0.107,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet": {
+     "pary": 14,
+     "brak": 0,
+     "sciezka": 0.453,
+     "klasyRecall": 0.453,
+     "klasyPrecision": 0.964,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "logi + szkielet + między": {
+     "pary": 14,
+     "brak": 0,
+     "sciezka": 0.453,
+     "klasyRecall": 0.501,
+     "klasyPrecision": 0.964,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "wstrzyknięcie / hak": {
+     "pary": 15,
+     "brak": 0,
+     "sciezka": 0.972,
+     "klasyRecall": 0.972,
+     "klasyPrecision": 1,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    },
+    "log bazy + log frameworka + szkielet": {
+     "pary": 14,
+     "brak": 0,
+     "sciezka": 0.668,
+     "klasyRecall": 0.85,
+     "klasyPrecision": 0.964,
+     "sqlRecall": 1,
+     "sqlPrecision": 1,
+     "txLiczba": 1
+    }
+   }
+  }
+ ]
+}

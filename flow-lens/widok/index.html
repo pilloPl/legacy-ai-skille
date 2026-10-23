@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flow Lens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="siatka-tlo" aria-hidden="true"></div>
+
+<header class="naglowek">
+  <div class="logo"><span class="logo-znak">▞</span> flow lens</div>
+  <div class="zakladki" role="tablist">
+    <button id="tab-przebieg" class="zakladka" role="tab" aria-selected="true" title="Jeden request krok po kroku (M przełącza)">przebieg</button>
+    <button id="tab-mapa" class="zakladka" role="tab" aria-selected="false" title="Kilka requestów na jednej mapie: części wspólne (M przełącza)">mapa</button>
+  </div>
+  <div class="zrodlo">
+    <label>nagranie <select id="nagrania"></select></label>
+    <button id="na-zywo" class="przelacznik" title="Przebiegi z bieżącego odbiornika; wyłącz, żeby wybrać nagranie (L)">● na żywo</button>
+    <button id="przelicz" title="Przelicz nagranie z bieżącą mapą (R)">przelicz z mapą</button>
+  </div>
+  <div class="opcje">
+    <button id="odkrywanie" class="przelacznik" title="Klasy pojawiają się, gdy pierwszy raz biorą udział (O)">odkrywanie</button>
+    <button id="widok-konsola" class="przelacznik" title="Logi i SQL do bieżącego miejsca (T)">konsola</button>
+    <button id="pokazowy" class="przelacznik" title="Rozmyj treści: SQL, logi (P)">tryb pokazowy</button>
+    <button id="motyw" class="przelacznik" title="Jasny / ciemny">jasny</button>
+  </div>
+</header>
+
+<nav class="warstwy" id="warstwy" aria-label="Warstwy"></nav>
+
+<main class="uklad">
+  <aside class="log" aria-label="Requesty i kroki">
+    <section class="requesty">
+      <div class="szukaj-pasek">
+        <input id="szukaj" type="search" placeholder="szukaj requestu…  (/)" title="Słowa: ścieżka, klasa, tabela, status, tekst logu. Filtry: sql>20, kroki>100, ms>50, http, job, n+1" autocomplete="off">
+        <span id="ile-req" class="ile-req"></span>
+      </div>
+      <ol id="lista-req"></ol>
+    </section>
+    <h2 id="log-naglowek">przebieg</h2>
+    <ol id="log"></ol>
+    <section class="mapa-panel" id="mapa-panel" hidden></section>
+  </aside>
+
+  <section class="scena-kontener">
+    <div class="rozdzial" id="rozdzial"></div>
+    <div class="srodek">
+      <div class="scena-ramka" id="scena-ramka">
+        <svg id="scena" role="img" aria-label="Przebieg requestu przez klasy"></svg>
+      </div>
+      <div class="scena-ramka mapa-ramka" id="mapa-ramka" hidden>
+        <svg id="mapa" role="img" aria-label="Kilka requestów na jednej mapie"></svg>
+        <div class="mapa-pusta" id="mapa-pusta">Przeciągnij requesty z listy albo kliknij <b>+</b> przy sugestii — zobaczysz, gdzie się spotykają.</div>
+      </div>
+      <div class="konsola" id="konsola" hidden></div>
+    </div>
+    <div class="narracja" id="narracja" aria-live="polite"></div>
+    <div class="sterowanie">
+      <button id="krok-wstecz" title="Poprzedni request (↑)">⏮</button>
+      <button id="etap-wstecz" title="Poprzedni krok (←)">◂ krok</button>
+      <button id="graj" class="przelacznik" aria-pressed="false" title="Tryb: manual (strzałki) albo auto (kolejny krok co tyle, ile ustawia tempo). Spacja przełącza.">manual</button>
+      <button id="etap-dalej" title="Następny krok (→)">krok ▸</button>
+      <button id="krok-dalej" title="Następny request (↓)">⏭</button>
+      <label class="tempo" title="Czas jednego kroku">tempo <input type="range" id="tempo" min="300" max="4000" step="100"> <span id="tempo-wart"></span></label>
+      <span id="pozycja" class="pozycja"></span>
+    </div>
+  </section>
+
+  <aside class="inspektor" id="inspektor-panel" aria-label="Szczegóły" hidden>
+    <div class="okruszki"><span id="okruszki"></span><button id="zamknij" title="Zamknij (Esc)">✕</button></div>
+    <div class="inspektor-tresc" id="inspektor-tresc"></div>
+  </aside>
+</main>
+
+<footer class="stopka">
+  <span class="pomoc">M mapa / przebieg · ←/→ krok (w requeście) · ↑/↓ request · / szukaj · spacja odtwórz · T konsola · O odkrywanie · PgUp/PgDn rozdział · 1–9 warstwy · 0 wyłącz wszystko · klik = szczegóły</span>
+  <span class="nasluch" id="nasluch"><span class="spinner"></span> <span id="nasluch-tekst">ładowanie</span></span>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

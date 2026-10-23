@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>flow-lens · testy sceny</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { overflow: auto; display: block; padding: 16px; }
+  #wynik { font-size: 13px; } .ok { color: var(--c-ok); } .zle { color: var(--c-deny); }
+  #ramka { width: 900px; height: 500px; border: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<h1>flow-lens · testy sceny</h1>
+<p>Każdy (request, krok, etap) z nagrań przykładowych przy kilku zestawach warstw i z odkrywaniem; niezmienniki sceny.</p>
+<div id="wynik">trwa…</div>
+<div class="scena-ramka" id="ramka"><svg id="scena"></svg></div>
+<script type="module">
+import { wczytajListe, wczytajNagranie, wczytajKonfig, zbuduj } from "./dane.js";
+import { Scena } from "./scena.js";
+import { etapyKroku, zKogo, doKogo } from "./etapy.js";
+import { TECHNICZNE, ZAWSZE, warstwyAdnotacji, adnotacjeKlasy } from "./warstwy.js";
+
+const bledy = [];
+let sprawdzen = 0;
+const sprawdz = (warunek, opis) => { sprawdzen++; if (!warunek && bledy.length < 40) bledy.push(opis); };
+
+const scena = new Scena(document.getElementById("scena"), document.getElementById("ramka"), () => {});
+const { nagrania } = await wczytajListe();
+for (const n of nagrania.filter(n => n.zrodlo === "przyklad")) {
+  const konfig = await wczytajKonfig({ zrodlo: "przyklad", plik: n.plik });
+  const adn = konfig.adnotacje;
+  const model = zbuduj(await wczytajNagranie("przyklad", n.plik));
+  const WA = warstwyAdnotacji(adn);
+  const zestawy = [
+    new Set([...ZAWSZE, ...TECHNICZNE.filter(w => w.domyslnie).map(w => w.id), ...WA.map(w => w.id)]),
+    new Set([...ZAWSZE, ...TECHNICZNE.map(w => w.id)]),
+    new Set([...ZAWSZE, "sql"]),
+    new Set(ZAWSZE),
+    new Set(["wejscia", "aplikacja", "repozytoria", "sql"]),       // bez domeny
+    new Set(["domena", "sql", "transakcje"]),                      // tylko domena i baza
+  ];
+  for (const W of zestawy) for (const odkrywanie of [true, false]) for (const p of model.przebiegi) {
+    const lista = p.kroki.filter(k => (k.E = etapyKroku(k, W)).length);
+    const opcje = { W, odkrywanie, adn, aktywneAdn: new Set([...W].filter(x => x.startsWith("a:"))), kolorWarstwy: id => WA.find(w => w.id === id)?.kolor || "red" };
+    lista.forEach((k, ki) => k.E.forEach((e, i) => {
+      const gdzie = `${n.plik} #${p.nr} krok ${k.nr} (${k.rodzaj}) etap ${i} [${[...W].join(",") || "bez warstw"}${odkrywanie ? ", odkrywanie" : ""}]`;
+      scena.rysuj(lista, ki, i, opcje);
+      const svg = scena.svg;
+      // aktywni uczestnicy istnieją i są widoczni
+      for (const id of [zKogo(k, W), doKogo(k, W)]) {
+        const g = scena.g.get(id);
+        sprawdz(g, `${gdzie}: brak pudełka ${id}`);
+        if (g) sprawdz(!g.classList.contains("bez-udzialu"), `${gdzie}: aktywne pudełko ${id} ukryte przez odkrywanie`);
+      }
+      // strzałka bieżącego kroku (poza etapem logu) i karta przy SQL / logu
+      if (e.typ !== "log") sprawdz(svg.querySelector(".strzalka"), `${gdzie}: brak strzałki`);
+      if (e.typ === "sql" || e.typ === "log") sprawdz(svg.querySelector(".karta"), `${gdzie}: brak karty z treścią`);
+      // żadnych NaN w rysunku
+      sprawdz(![...svg.querySelectorAll("path, rect, text")].some(x => /NaN/.test(x.getAttribute("d") || "") || /NaN/.test(x.getAttribute("x") || "") || /NaN/.test(x.getAttribute("y") || "")), `${gdzie}: NaN w rysunku`);
+      // wejście nad bazą, aplikacja nad domeną
+      const y = id => scena.L.poz.get(id)?.y;
+      const baza = p.uczestnicy.find(u => u.rodzaj === "baza"), swiat = p.uczestnicy.find(u => u.rodzaj === "wejscie");
+      if (baza && y(baza.id) != null && swiat) sprawdz(y(swiat.id) < y(baza.id), `${gdzie}: wejście nie jest nad bazą`);
+      for (const u of p.uczestnicy.filter(u => u.rola === "aplikacja")) for (const d of p.uczestnicy.filter(u => u.rola === "domena"))
+        if (y(u.id) != null && y(d.id) != null) sprawdz(y(u.id) < y(d.id), `${gdzie}: ${u.nazwa} (aplikacja) nie nad ${d.nazwa} (domena)`);
+      // paski adnotacji: tyle, ile aktywnych warstw adnotacji ma klasa
+      for (const [id, g] of scena.g) {
+        const u = p.uczestnik.get(id);
+        const ile = u.klasa ? adnotacjeKlasy(adn, u.klasa).filter(a => opcje.aktywneAdn.has(a)).length : 0;
+        sprawdz(g.querySelectorAll(".paski rect").length === ile, `${gdzie}: ${u.nazwa} ma ${g.querySelectorAll(".paski rect").length} pasków zamiast ${ile}`);
+      }
+      // odkrywanie: przed pierwszym udziałem pudełka nie widać
+      if (odkrywanie) {
+        const byli = new Set(lista.slice(0, ki + 1).flatMap(x => [zKogo(x, W), doKogo(x, W)]));
+        for (const [id, g] of scena.g) sprawdz(byli.has(id) === !g.classList.contains("bez-udzialu"), `${gdzie}: odkrywanie ${id}`);
+      }
+    }));
+  }
+}
+window.WYNIK_TESTOW = { sprawdzen, bledy };
+document.getElementById("wynik").innerHTML = bledy.length
+  ? `<p class="zle">✖ ${bledy.length} błędów na ${sprawdzen} sprawdzeń</p><ul>${bledy.map(b => `<li>${b}</li>`).join("")}</ul>`
+  : `<p class="ok">✔ ${sprawdzen} sprawdzeń, bez błędów</p>`;
+</script>
+</body>
+</html>

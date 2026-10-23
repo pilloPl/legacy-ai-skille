@@ -1,0 +1,53 @@
+package flowlens;
+
+import java.io.IOException;
+import @@SERVLET@@.DispatcherType;
+import @@SERVLET@@.Filter;
+import @@SERVLET@@.FilterChain;
+import @@SERVLET@@.FilterConfig;
+import @@SERVLET@@.ServletException;
+import @@SERVLET@@.ServletRequest;
+import @@SERVLET@@.ServletResponse;
+import @@SERVLET@@.http.HttpServletRequest;
+import @@SERVLET@@.http.HttpServletResponse;
+import org.springframework.core.Ordered;
+
+/**
+ * flow-lens: granice requestu HTTP — otwiera kor przed jakąkolwiek klasą aplikacji, zamyka ze statusem, szablonem
+ * ścieżki („/zamowienia/{id}”) i wyjątkiem nieobsłużonym. Spring Boot rejestruje bean Filter sam (autokonfiguracja).
+ */
+public class DiagWeb implements Filter, Ordered {
+    private static final String WZORZEC = "org.springframework.web.servlet.HandlerMapping.bestMatchingPattern";
+
+    @Override public int getOrder() { return Ordered.HIGHEST_PRECEDENCE; }
+    @Override public void init(FilterConfig konfiguracja) { }
+    @Override public void destroy() { }
+
+    /** szablon trasy jak w OTel (http.route): context-path + prefiks serwletu (mapowanie „/api/*”) + wzorzec handlera */
+    static String trasa(HttpServletRequest r, String wzorzec) {
+        String kontekst = r.getContextPath() != null ? r.getContextPath() : "";
+        String serwlet = r.getPathInfo() != null && r.getServletPath() != null ? r.getServletPath() : "";
+        if (!serwlet.isEmpty() && (wzorzec.equals(serwlet) || wzorzec.startsWith(serwlet + "/"))) serwlet = "";   // alwaysUseFullPath
+        return kontekst + serwlet + wzorzec;
+    }
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        if (!(req instanceof HttpServletRequest) || req.getDispatcherType() != DispatcherType.REQUEST) { chain.doFilter(req, res); return; }
+        HttpServletRequest r = (HttpServletRequest) req;
+        HttpServletResponse o = (HttpServletResponse) res;
+        String uri = r.getRequestURI();
+        Diag.httpStart(r.getMethod(), uri);
+        Throwable blad = null;
+        try {
+            chain.doFilter(req, res);
+        } catch (IOException | ServletException | RuntimeException | Error e) {
+            blad = e;
+            throw e;
+        } finally {
+            Object wzorzec = r.getAttribute(WZORZEC);
+            int status = blad != null && o.getStatus() < 400 ? 500 : o.getStatus();
+            Diag.httpKoniec(uri, status, wzorzec != null ? trasa(r, wzorzec.toString()) : null, blad);
+        }
+    }
+}

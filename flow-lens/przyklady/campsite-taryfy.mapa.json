@@ -1,0 +1,290 @@
+{
+ "projekt": "campsite-power",
+ "technologie": [
+  "spring",
+  "java"
+ ],
+ "klasy": {
+  "io.pillopl.webservice.console.auth.AuthWebService": {
+   "rola": "wejscie",
+   "nazwa": "AuthWebService",
+   "powod": "spring: @RestController",
+   "pewnosc": "pewne",
+   "poziom": 0,
+   "metody": [
+    "createFault",
+    "currentUser",
+    "login",
+    "logout"
+   ]
+  },
+  "io.pillopl.user.UserApiService": {
+   "rola": "aplikacja",
+   "nazwa": "UserApiService",
+   "powod": "spring: @Service + nazwa *ApiService",
+   "pewnosc": "pewne",
+   "poziom": 1,
+   "metody": [
+    "authenticate",
+    "changeUserStatus",
+    "createUser",
+    "findSelfServiceUsers",
+    "findUser",
+    "findUsers",
+    "findUsersByRoles",
+    "getCurrentUser",
+    "groupIdOf",
+    "replaceUserRoles",
+    "setPassword",
+    "setupAffiliateOwner",
+    "updateUser"
+   ]
+  },
+  "io.pillopl.user.UserinfoService": {
+   "rola": "domena",
+   "nazwa": "UserinfoService",
+   "powod": "spring: @Service/@Component z logiką w pakiecie funkcyjnym",
+   "pewnosc": "do potwierdzenia",
+   "poziom": 11,
+   "metody": [
+    "changeEmail",
+    "changeName",
+    "changeStatus",
+    "checkAffiliateOwnerSetup",
+    "checkIsManageable",
+    "createUser",
+    "createUserinfo",
+    "determineMarket",
+    "emailExists",
+    "find",
+    "findByRoles",
+    "findByUsername",
+    "findManageable",
+    "findManageableUsers",
+    "findSelfServiceUsers",
+    "findSettlementPartnerNo",
+    "findWithScopeGroup",
+    "getDefaultLocale",
+    "getLocalPartOfEmail",
+    "recordFailedLogin",
+    "recordSuccessfulLogin",
+    "replaceRoles",
+    "save",
+    "saveWithDerivedLogin",
+    "setPassword",
+    "setupAffiliateOwner"
+   ],
+   "transakcyjne": [
+    "findManageableUsers"
+   ]
+  },
+  "io.pillopl.persistence.dao.UserinfoDao": {
+   "rola": "repozytorium",
+   "nazwa": "UserinfoDao",
+   "powod": "spring: @Repository / *Dao / *Repository",
+   "pewnosc": "pewne",
+   "poziom": 14
+  },
+  "io.pillopl.user.Userinfo": {
+   "rola": "domena",
+   "nazwa": "Userinfo",
+   "powod": "spring: encja @Entity",
+   "pewnosc": "pewne",
+   "poziom": 9,
+   "metody": [
+    "canLogIn",
+    "containsRole",
+    "getEffectiveRoles",
+    "getGroup",
+    "hasRight",
+    "hasSelfServiceRole",
+    "removeRole"
+   ]
+  },
+  "io.pillopl.persistence.dao.AuditDao": {
+   "rola": "repozytorium",
+   "nazwa": "AuditDao",
+   "powod": "spring: @Repository / *Dao / *Repository",
+   "pewnosc": "pewne",
+   "poziom": 14
+  },
+  "io.pillopl.webservice.console.tariff.TariffWebService": {
+   "rola": "wejscie",
+   "nazwa": "TariffWebService",
+   "powod": "spring: @RestController",
+   "pewnosc": "pewne",
+   "poziom": 0,
+   "metody": [
+    "applyTariffToAffiliatePedestals",
+    "applyTariffToPedestals",
+    "applyTariffToSocket",
+    "createFault",
+    "existsTariff",
+    "findSocketTariff",
+    "findTariffs",
+    "getDefaultTariff",
+    "getTariff",
+    "saveTariff",
+    "setCampsiteDefaultTariff",
+    "setMarketDefaultTariff",
+    "simulatePrice",
+    "updateTariff"
+   ]
+  },
+  "io.pillopl.pricing.TariffApiService": {
+   "rola": "aplikacja",
+   "nazwa": "TariffApiService",
+   "powod": "spring: @Service + nazwa *ApiService",
+   "pewnosc": "pewne",
+   "poziom": 1,
+   "metody": [
+    "applyTariffToAffiliatePedestals",
+    "applyTariffToPedestals",
+    "applyTariffToSocket",
+    "checkTariffOrRemoval",
+    "existsTariff",
+    "fetchSocket",
+    "fetchSocketInScope",
+    "fetchTariff",
+    "findSocketTariff",
+    "findTariffs",
+    "getDefaultTariff",
+    "getTariff",
+    "saveTariff",
+    "setCampsiteDefaultTariff",
+    "setMarketDefaultTariff",
+    "simulatePrice",
+    "updateTariff"
+   ]
+  },
+  "io.pillopl.user.PrincipalResolver": {
+   "rola": "domena",
+   "nazwa": "PrincipalResolver",
+   "powod": "spring: @Service/@Component z logiką w pakiecie funkcyjnym",
+   "pewnosc": "do potwierdzenia",
+   "poziom": 5,
+   "metody": [
+    "findUser",
+    "loadScopeAndRights",
+    "resolve"
+   ],
+   "transakcyjne": [
+    "resolve"
+   ]
+  },
+  "io.pillopl.pricing.TariffService": {
+   "rola": "domena",
+   "nazwa": "TariffService",
+   "powod": "spring: @Service/@Component z logiką w pakiecie funkcyjnym",
+   "pewnosc": "do potwierdzenia",
+   "poziom": 2,
+   "metody": [
+    "evaluateMarket",
+    "existsTariff",
+    "failWith",
+    "findTariff",
+    "findTariffForUser",
+    "getDefaultTariff",
+    "saveTariff",
+    "setMarketDefaultTariff",
+    "updateTariff",
+    "validateComponent",
+    "validateTariff"
+   ],
+   "transakcyjne": [
+    "saveTariff",
+    "setMarketDefaultTariff",
+    "updateTariff"
+   ]
+  },
+  "io.pillopl.group.GroupService": {
+   "rola": "domena",
+   "nazwa": "GroupService",
+   "powod": "spring: @Service/@Component z logiką w pakiecie funkcyjnym",
+   "pewnosc": "do potwierdzenia",
+   "poziom": 9,
+   "metody": [
+    "checkIsManageable",
+    "collectSubtreeIdsOfAll",
+    "collectValidityErrors",
+    "createIssuerGroup",
+    "createSiteGroup",
+    "createStaffGroup",
+    "determineMarketByGroupId",
+    "extractAllAcceptingSiteGroupIds",
+    "fetchByGroupId",
+    "fetchIssuerGroup",
+    "fetchNetworkCardIssuerGroup",
+    "fetchParentLine",
+    "fetchParentLineIds",
+    "fetchSiteGroup",
+    "fetchSiteGroupIds",
+    "fetchStaffGroup",
+    "findAcceptingSiteGroupIds",
+    "findIssuerGroupIdsAcceptedAt",
+    "findManageable",
+    "findManageableGroups",
+    "findMarketFromParentGroups",
+    "findParentGroups",
+    "findParents",
+    "isAcceptedAt",
+    "isCardAcceptedAt",
+    "isManageable",
+    "loadGroupsOfType",
+    "validateGroupTree"
+   ],
+   "transakcyjne": [
+    "checkIsManageable",
+    "collectSubtreeIdsOfAll",
+    "collectValidityErrors",
+    "createIssuerGroup",
+    "createSiteGroup",
+    "createStaffGroup",
+    "determineMarketByGroupId",
+    "extractAllAcceptingSiteGroupIds",
+    "fetchByGroupId",
+    "fetchIssuerGroup",
+    "fetchNetworkCardIssuerGroup",
+    "fetchParentLine",
+    "fetchParentLineIds",
+    "fetchSiteGroup",
+    "fetchSiteGroupIds",
+    "fetchStaffGroup",
+    "findAcceptingSiteGroupIds",
+    "findIssuerGroupIdsAcceptedAt",
+    "findMarketFromParentGroups",
+    "isAcceptedAt",
+    "isCardAcceptedAt",
+    "isManageable",
+    "loadGroupsOfType",
+    "validateGroupTree"
+   ]
+  },
+  "io.pillopl.persistence.dao.GroupDao": {
+   "rola": "repozytorium",
+   "nazwa": "GroupDao",
+   "powod": "spring: @Repository / *Dao / *Repository",
+   "pewnosc": "pewne",
+   "poziom": 14
+  },
+  "io.pillopl.persistence.dao.TariffDao": {
+   "rola": "repozytorium",
+   "nazwa": "TariffDao",
+   "powod": "spring: @Repository / *Dao / *Repository",
+   "pewnosc": "pewne",
+   "poziom": 14
+  },
+  "io.pillopl.pricing.TariffPriceText": {
+   "rola": "domena",
+   "nazwa": "TariffPriceText",
+   "powod": "java: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "poziom": 12,
+   "metody": [
+    "describe",
+    "describeComponents",
+    "price"
+   ]
+  }
+ }
+}

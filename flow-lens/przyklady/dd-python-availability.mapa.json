@@ -1,0 +1,189 @@
+{
+ "projekt": "dd-python",
+ "technologie": [
+  "python"
+ ],
+ "klasy": {
+  "smartschedule.availability.availability_facade.AvailabilityFacade": {
+   "rola": "aplikacja",
+   "nazwa": "AvailabilityFacade",
+   "powod": "python: nazwa *Facade",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/availability/availability_facade.py:23",
+   "poziom": 1,
+   "metody": [
+    "_block",
+    "_find_grouped",
+    "block",
+    "block_random_available",
+    "create_resource_slots",
+    "disable",
+    "find",
+    "find_by_parent_id",
+    "load_calendar",
+    "load_calendars",
+    "release"
+   ]
+  },
+  "smartschedule.availability.resource_grouped_availability.ResourceGroupedAvailability": {
+   "rola": "domena",
+   "nazwa": "ResourceGroupedAvailability",
+   "powod": "python: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/availability/resource_grouped_availability.py:14",
+   "poziom": 2,
+   "metody": [
+    "block",
+    "blocked_entirely_by",
+    "disable",
+    "find_blocked_by",
+    "has_no_slots",
+    "is_disabled_entirely_by",
+    "is_entirely_available",
+    "is_entirely_with_parent_id",
+    "of",
+    "release"
+   ]
+  },
+  "smartschedule.availability.segment.segment_in_minutes.SegmentInMinutes": {
+   "rola": "domena",
+   "nazwa": "SegmentInMinutes",
+   "powod": "python: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/availability/segment/segment_in_minutes.py:7",
+   "poziom": 3,
+   "metody": [
+    "default_segment",
+    "of"
+   ]
+  },
+  "smartschedule.shared.timeslot.time_slot.TimeSlot": {
+   "rola": "domena",
+   "nazwa": "TimeSlot",
+   "powod": "python: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/shared/timeslot/time_slot.py:10",
+   "poziom": 7,
+   "metody": [
+    "common_part_with",
+    "create_daily_time_slot_at_utc",
+    "create_daily_time_slot_at_utc_duration",
+    "create_monthly_time_slot_at_utc",
+    "empty",
+    "is_empty",
+    "leftover_after_removing_common_with",
+    "overlaps",
+    "stretch",
+    "within"
+   ]
+  },
+  "smartschedule.availability.resource_availability_id.ResourceAvailabilityId": {
+   "rola": "domena",
+   "nazwa": "ResourceAvailabilityId",
+   "powod": "python: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/availability/resource_availability_id.py:8",
+   "poziom": 3,
+   "metody": [
+    "from_str",
+    "new_one",
+    "none"
+   ]
+  },
+  "smartschedule.availability.resource_id.ResourceId": {
+   "rola": "domena",
+   "nazwa": "ResourceId",
+   "powod": "python: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/availability/resource_id.py:8",
+   "poziom": 4,
+   "metody": [
+    "new_one"
+   ]
+  },
+  "smartschedule.availability.blockade.Blockade": {
+   "rola": "domena",
+   "nazwa": "Blockade",
+   "powod": "python: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/availability/blockade.py:9",
+   "poziom": 4,
+   "metody": [
+    "can_be_taken_by",
+    "disabled_by",
+    "is_disabled_by",
+    "none",
+    "owned_by"
+   ]
+  },
+  "smartschedule.availability.owner.Owner": {
+   "rola": "domena",
+   "nazwa": "Owner",
+   "powod": "python: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/availability/owner.py:8",
+   "poziom": 6,
+   "metody": [
+    "by_none",
+    "new_one",
+    "none"
+   ]
+  },
+  "smartschedule.availability.resource_availability.ResourceAvailability": {
+   "rola": "domena",
+   "nazwa": "ResourceAvailability",
+   "powod": "python: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/availability/resource_availability.py:10",
+   "poziom": 3,
+   "metody": [
+    "_is_available_for",
+    "block",
+    "blocked_by",
+    "disable",
+    "enable",
+    "is_disabled",
+    "is_disabled_by",
+    "release"
+   ]
+  },
+  "smartschedule.availability.resource_availability_read_model.ResourceAvailabilityReadModel": {
+   "rola": "domena",
+   "nazwa": "ResourceAvailabilityReadModel",
+   "powod": "python: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/availability/resource_availability_read_model.py:18",
+   "poziom": 2,
+   "metody": [
+    "_stmt",
+    "load",
+    "load_all"
+   ]
+  },
+  "smartschedule.availability.calendars.Calendars": {
+   "rola": "domena",
+   "nazwa": "Calendars",
+   "powod": "python: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/availability/calendars.py:10",
+   "poziom": 4,
+   "metody": [
+    "get",
+    "of"
+   ]
+  },
+  "smartschedule.shared.event_bus.EventBus": {
+   "rola": "domena",
+   "nazwa": "EventBus",
+   "powod": "python: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "smartschedule/shared/event_bus.py:45",
+   "poziom": 3,
+   "metody": [
+    "async_event_handler",
+    "has_event_handlers",
+    "publish"
+   ]
+  }
+ }
+}

@@ -1,0 +1,99 @@
+{
+  "warstwy": [
+    {
+      "id": "uprawnienia",
+      "nazwa": "sprawdzanie uprawnień",
+      "kolor": "#e4572e",
+      "opis": "kto może to zobaczyć / zrobić"
+    },
+    {
+      "id": "wyswietlanie",
+      "nazwa": "wyświetlanie danych",
+      "kolor": "#3a86ff",
+      "opis": "przygotowanie danych do ekranu"
+    }
+  ],
+  "na": [
+    {
+      "cel": "PrincipalResolver",
+      "warstwy": [
+        "uprawnienia"
+      ]
+    },
+    {
+      "cel": "Userinfo#hasRight",
+      "warstwy": [
+        "uprawnienia"
+      ]
+    },
+    {
+      "cel": "TariffApiService",
+      "warstwy": [
+        "uprawnienia",
+        "wyswietlanie"
+      ]
+    },
+    {
+      "cel": "TariffPriceText",
+      "warstwy": [
+        "wyswietlanie"
+      ]
+    },
+    {
+      "cel": "sql:/price_component/i",
+      "warstwy": [
+        "wyswietlanie"
+      ]
+    }
+  ],
+  "etykiety": [
+    {
+      "cel": "TariffPriceText",
+      "tekst": "tekst ceny składany z elementów taryfy",
+      "warstwa": "wyswietlanie"
+    },
+    {
+      "cel": "PrincipalResolver#resolve",
+      "tekst": "uprawnienia liczone przy każdym requeście",
+      "link": "https://github.com/pilloPl/campsite-power",
+      "warstwa": "uprawnienia"
+    }
+  ],
+  "rozdzialy": [
+    {
+      "tytul": "Kto pyta?",
+      "tekst": "Zanim ekran taryf cokolwiek pokaże, PrincipalResolver ustala użytkownika, jego grupy i prawa — przy każdym requeście.",
+      "przebieg": "/findTariffs/",
+      "krok": "PrincipalResolver#resolve",
+      "warstwy": [
+        "sql",
+        "transakcje",
+        "repozytoria",
+        "uprawnienia"
+      ]
+    },
+    {
+      "tytul": "Rynek użytkownika",
+      "tekst": "Taryfy są per rynek. Rynek wynika z grupy użytkownika.",
+      "przebieg": "/findTariffs/",
+      "krok": "TariffService#evaluateMarket",
+      "warstwy": [
+        "sql",
+        "repozytoria"
+      ]
+    },
+    {
+      "tytul": "Tekst ceny i N+1",
+      "tekst": "Dla każdej taryfy osobno doczytywane są elementy i składniki ceny (leniwe ładowanie).",
+      "przebieg": "/findTariffs/",
+      "krok": "sql:/price_component/i",
+      "warstwy": [
+        "sql",
+        "wyswietlanie"
+      ]
+    }
+  ],
+  "wazne_logi": [
+    "/refused \\(|failed:/i"
+  ]
+}

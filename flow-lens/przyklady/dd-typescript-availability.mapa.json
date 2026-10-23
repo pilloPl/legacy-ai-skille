@@ -1,0 +1,126 @@
+{
+ "projekt": "dd-typescript",
+ "technologie": [
+  "typescript"
+ ],
+ "klasy": {
+  "src.availability.availabilityFacade.AvailabilityFacade": {
+   "rola": "aplikacja",
+   "nazwa": "AvailabilityFacade",
+   "powod": "typescript: nazwa fasady / serwisu aplikacyjnego",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/availability/availabilityFacade.ts:19",
+   "poziom": 1,
+   "metody": [
+    "block",
+    "blockGrouped",
+    "blockRandomAvailable",
+    "constructor",
+    "createResourceSlots",
+    "disable",
+    "find",
+    "findByParentId",
+    "findGrouped",
+    "loadCalendar",
+    "loadCalendars",
+    "release"
+   ]
+  },
+  "src.availability.resourceGroupedAvailability.ResourceGroupedAvailability": {
+   "rola": "domena",
+   "nazwa": "ResourceGroupedAvailability",
+   "powod": "typescript: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/availability/resourceGroupedAvailability.ts:9",
+   "poziom": 2,
+   "metody": [
+    "availabilities",
+    "block",
+    "blockedEntirelyBy",
+    "constructor",
+    "disable",
+    "findBlockedBy",
+    "of",
+    "owners",
+    "release",
+    "resourceId",
+    "size"
+   ]
+  },
+  "src.availability.segment.segmentsInMinutes.SegmentInMinutes": {
+   "rola": "domena",
+   "nazwa": "SegmentInMinutes",
+   "powod": "typescript: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/availability/segment/segmentsInMinutes.ts:3",
+   "poziom": 2,
+   "metody": [
+    "constructor",
+    "of"
+   ]
+  },
+  "src.availability.segment.segments.Segments": {
+   "rola": "domena",
+   "nazwa": "Segments",
+   "powod": "typescript: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/availability/segment/segments.ts:6",
+   "poziom": 3,
+   "metody": [
+    "normalizeToSegmentBoundaries",
+    "split"
+   ]
+  },
+  "src.availability.blockade.Blockade": {
+   "rola": "domena",
+   "nazwa": "Blockade",
+   "powod": "typescript: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/availability/blockade.ts:4",
+   "poziom": 4,
+   "metody": [
+    "canBeTakenBy",
+    "constructor",
+    "disabledBy",
+    "none",
+    "ownedBy"
+   ]
+  },
+  "src.availability.owner.Owner": {
+   "rola": "domena",
+   "nazwa": "Owner",
+   "powod": "typescript: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/availability/owner.ts:3",
+   "poziom": 7,
+   "metody": [
+    "byNone",
+    "constructor",
+    "newOne",
+    "none",
+    "of"
+   ]
+  },
+  "src.availability.resourceAvailability.ResourceAvailability": {
+   "rola": "domena",
+   "nazwa": "ResourceAvailability",
+   "powod": "typescript: klasa z logiką poza pakietami technicznymi",
+   "pewnosc": "do potwierdzenia",
+   "plik": "src/availability/resourceAvailability.ts:8",
+   "poziom": 3,
+   "metody": [
+    "block",
+    "blockedBy",
+    "constructor",
+    "disable",
+    "enable",
+    "id",
+    "release",
+    "resourceId",
+    "resourceParentId",
+    "segment",
+    "version"
+   ]
+  }
+ }
+}
