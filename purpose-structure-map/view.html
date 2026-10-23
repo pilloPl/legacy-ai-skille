@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Problem i rozwiązanie</title>
+<!--
+  Viewer for purpose-structure-map.json (built by scripts/build.mjs from <area>-current-model.json + call-graph.json).
+  ROZWIĄZANIE (left, the current structure): clients outside the island → the island; click the island to open it,
+  click again to close. At most 10 clients and 10 island classes are shown, the rest behind a „…” node; whatever the
+  selection needs is shown anyway. One edge per client → class, up to 3 method labels (+ „więcej”) when zoomed in.
+  PROBLEM (right): group → decision → question (concept-explorer: generalization groups, question tree, questions).
+  Selecting any level highlights, on the solution side, every class answering its leaf questions and every client
+  asking them. „Złącz”: questions move next to the classes that answer them; edges are hidden until a question,
+  decision or group is selected, then only its edges appear, labelled with the question.
+  Offline, data embedded in #embedded-data.
+-->
+<script type="application/json" id="embedded-data">null</script>
+<style>
+  :root{
+    --bg:#f4efe6; --panel:#fbf8f2; --ink:#201a16; --muted:#6b5f54; --line:#d8cdbb;
+    --chip:#efe7da; --chip-ink:#4a3f36; --accent:#b5632b; --accent-soft:#f3e3d4;
+    --green:#1a7f4b; --green-bg:#e4f4ea; --red:#b42318; --red-bg:#fbe4e2; --purple:#6b3fa0; --purple-bg:#efe6fb;
+    --island:#e6f1ef; --island-br:#1f7a73; --cls:#ffffff; --cli:#f1ebe1; --edge:#b9ab97; --shadow:rgba(60,40,20,.16);
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#15110e; --panel:#1f1812; --ink:#f1e9dd; --muted:#ab9d8c; --line:#352b22;
+    --chip:#241c15; --chip-ink:#d8ccbc; --accent:#e08a4c; --accent-soft:#3a2617;
+    --green:#5bd08a; --green-bg:#12301f; --red:#f0857a; --red-bg:#361613; --purple:#c19dee; --purple-bg:#241733;
+    --island:#11292a; --island-br:#3fb3a8; --cls:#1b1611; --cli:#241c15; --edge:#5a4c3d; --shadow:rgba(0,0,0,.5);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#15110e; --panel:#1f1812; --ink:#f1e9dd; --muted:#ab9d8c; --line:#352b22;
+    --chip:#241c15; --chip-ink:#d8ccbc; --accent:#e08a4c; --accent-soft:#3a2617;
+    --green:#5bd08a; --green-bg:#12301f; --red:#f0857a; --red-bg:#361613; --purple:#c19dee; --purple-bg:#241733;
+    --island:#11292a; --island-br:#3fb3a8; --cls:#1b1611; --cli:#241c15; --edge:#5a4c3d; --shadow:rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "IBM Plex Sans","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1320px;margin:0 auto;padding:20px 16px 80px}
+  h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:600}
+  .hero{position:relative;overflow:hidden;margin:-20px -16px 14px;padding:26px 22px 22px;border-bottom:1px solid var(--line);
+    background:radial-gradient(120% 80% at 85% -10%,color-mix(in oklab,var(--accent) 22%,transparent),transparent 60%),
+      radial-gradient(90% 70% at -10% 110%,color-mix(in oklab,#1f7a73 20%,transparent),transparent 55%),linear-gradient(160deg,var(--bg),var(--panel))}
+  .eyebrow{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin:0}
+  .hero h1{font-size:clamp(1.5rem,3.4vw,2.2rem);line-height:1.15;margin:10px 0 0}
+  .intro{color:var(--muted);max-width:86ch;margin:8px 0 0}
+  .strony{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .strona{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:6px 12px;background:var(--panel);font-size:13.5px}
+  .strona b{font-family:"IBM Plex Mono",monospace;letter-spacing:.12em;font-size:12px}
+  .strona.roz b{color:var(--island-br)} .strona.pro b{color:var(--accent)}
+  .bar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;background:var(--bg)}
+  .btn{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 14px;font:inherit;font-size:13.5px;cursor:pointer;transition:border-color .15s,background .15s}
+  .btn:hover{border-color:var(--accent)} .btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.big{font-weight:650;padding:7px 18px}
+  .spacer{flex:1} .muted{color:var(--muted)} .small{font-size:12.5px}
+  .stage{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:relative;box-shadow:0 10px 30px -14px var(--shadow)}
+  svg#g{width:100%;height:min(78vh,900px);display:block;cursor:grab;touch-action:none;user-select:none}
+  svg#g.drag{cursor:grabbing}
+  .hint{position:absolute;left:12px;bottom:8px;font-size:12px;color:var(--muted);pointer-events:none}
+  svg text{fill:var(--ink);font-size:12px}
+  .hd{font-family:"IBM Plex Mono",monospace;font-size:22px;font-weight:600;letter-spacing:.18em}
+  .hd.roz{fill:var(--island-br)} .hd.pro{fill:var(--accent)}
+  .hd-sub{font-size:12.5px;fill:var(--muted)}
+  .n rect{stroke-width:1.3;transition:stroke .15s} .n{cursor:pointer} .n:hover rect{stroke:var(--accent)}
+  .n.cli rect{fill:var(--cli);stroke:var(--line)} .n.cls rect{fill:var(--cls);stroke:var(--island-br)}
+  .n.more rect{fill:transparent;stroke:var(--line);stroke-dasharray:4 3} .n.more text{fill:var(--muted)}
+  .n.isl>rect{fill:var(--island);stroke:var(--island-br);stroke-width:2}
+  .n.q rect{fill:var(--panel);stroke:var(--green)} .n.q.pain rect{stroke:var(--red);stroke-width:2.2}
+  .n.dec rect{fill:var(--accent-soft);stroke:var(--accent)} .n.grp rect{fill:var(--purple-bg);stroke:var(--purple)}
+  .n.grp.pain rect,.n.dec.pain rect{stroke:var(--red);stroke-width:2.6} .n.grp.pain .nm{fill:var(--red)}
+  .n.sel rect{stroke:var(--accent)!important;stroke-width:3!important}
+  .n.hot rect{stroke:var(--accent);stroke-width:2.4}
+  .n .nm{font-weight:600} .n .mt{fill:var(--muted);font-size:10.5px}
+  .n .qid{fill:var(--accent);font-weight:700} .n.q.pain .qid{fill:var(--red)}
+  .isl-name{font-family:"Fraunces",Georgia,serif;font-size:17px;font-weight:600;fill:var(--island-br)}
+  .e{fill:none;stroke:var(--edge);stroke-opacity:.7} .e.int{stroke-dasharray:4 3;stroke-opacity:.6}
+  .e.rule{stroke:var(--purple)} .e.hot{stroke:var(--accent);stroke-opacity:1} .e.q{stroke:var(--green);stroke-opacity:.95} .e.q.pain{stroke:var(--red)}
+  .hit{fill:none;stroke:transparent;stroke-width:12;cursor:pointer}
+  .el{font-size:10.5px;cursor:pointer} .el .bg{fill:var(--panel);stroke:var(--line)} .el.ql .bg{stroke:var(--green)} .el.ql.pain .bg{stroke:var(--red)}
+  .conn{fill:none;stroke:var(--green);stroke-dasharray:2 3;stroke-width:1.4} .conn.pain{stroke:var(--red)}
+  .tl{fill:none;stroke:var(--line);stroke-width:1.3} .tl.hot{stroke:var(--accent);stroke-width:2}
+  .badge{font-size:10px;font-weight:700;fill:var(--accent)}
+  .dim{opacity:.13}
+  .cols{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-top:16px} @media(max-width:860px){.cols{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:0 6px 20px -14px var(--shadow)}
+  .card h3{margin:0 0 6px;font-size:1.15rem}
+  ol.leg{margin:0;padding-left:0;list-style:none;display:grid;gap:6px}
+  ol.leg li{border:1px solid var(--line);border-radius:10px;padding:7px 11px;background:var(--bg);cursor:pointer;transition:border-color .15s}
+  ol.leg li:hover{border-color:var(--accent)}
+  ol.leg li.pain{border-left:4px solid var(--red)} ol.leg li.hot{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+  ol.leg li b.id{color:var(--accent);margin-right:6px} ol.leg li.pain b.id{color:var(--red)}
+  .po{display:block;color:var(--muted);font-size:12.5px}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.85em}
+  .chip{display:inline-block;background:var(--chip);color:var(--chip-ink);border-radius:999px;padding:0 8px;font-size:12px;margin:1px 2px}
+  .chip.pain{background:var(--red-bg);color:var(--red)}
+  #det ul{margin:4px 0;padding-left:18px} #det li{margin:2px 0;font-size:13px}
+  .lab{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:650;margin:10px 0 2px}
+  /* crossing: CO (problem) × JAK (rozwiązanie) per caller */
+  .cross{margin-top:22px} .cross>h2{margin:0 0 4px;font-size:1.45rem} .cross .intro{margin:0 0 12px}
+  details.cg{margin:12px 0;border:1px solid var(--line);border-radius:18px;background:color-mix(in oklab,var(--purple-bg) 45%,var(--bg));overflow:hidden}
+  details.cg>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;padding:14px 18px}
+  details.cg>summary::-webkit-details-marker{display:none}
+  details.cg>summary::before{content:"▸";color:var(--purple);font-size:14px;transition:transform .15s} details.cg[open]>summary::before{transform:rotate(90deg)}
+  details.cg[open]>summary{border-bottom:1px solid var(--line)}
+  details.cg.pain{border-color:color-mix(in oklab,var(--red) 55%,var(--line));border-left:5px solid var(--red)}
+  .cg-b{color:var(--ink)} .cg-b b{color:var(--red)}
+  .cg-n{font-family:"Fraunces",Georgia,serif;font-size:1.22rem;font-weight:600;color:var(--purple)}
+  .cg-c{font-size:12.5px;color:var(--muted)} .cg-w{flex-basis:100%;font-size:13px;color:var(--muted);padding-left:22px}
+  details.cg>.cq{margin:12px 14px}
+  details.cq>summary{list-style:none;cursor:pointer;display:block} details.cq>summary::-webkit-details-marker{display:none}
+  details.cq>summary .qid::before{content:"▾ ";color:var(--muted)} details.cq:not([open])>summary .qid::before{content:"▸ "}
+  details.cq:not([open])>summary{border-bottom:0}
+  .cq{background:var(--panel);border:1px solid var(--line);border-radius:16px;margin:14px 0;overflow:hidden;box-shadow:0 8px 26px -16px var(--shadow)}
+  .cq.pain{border-left:5px solid var(--red)}
+  .cq-h{padding:14px 18px 10px;border-bottom:1px solid var(--line);background:color-mix(in oklab,var(--accent) 5%,var(--panel))}
+  .cq-h .qid{font-family:"IBM Plex Mono",monospace;font-weight:700;color:var(--accent);margin-right:8px} .cq.pain .cq-h .qid{color:var(--red)}
+  .cq-h .qt{font-family:"Fraunces",Georgia,serif;font-size:1.12rem;font-weight:600}
+  .cq-h .sum{color:var(--muted);font-size:13.5px;margin-top:6px;max-width:110ch}
+  .cq-h .cnt{font-size:12px;color:var(--muted);margin-top:6px}
+  table.ct{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.ct th{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:left;padding:8px 12px;background:var(--chip);border-bottom:1px solid var(--line)}
+  table.ct th.pro{color:var(--accent)} table.ct th.roz{color:var(--island-br)}
+  table.ct td{vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+  table.ct tr:last-child td{border-bottom:0}
+  td.caller{width:19%;font-family:"IBM Plex Mono",monospace;font-size:12px} td.caller .cls{font-weight:600} td.caller .kind{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+  td.co{width:31%;background:color-mix(in oklab,var(--accent) 4%,transparent)} td.co .ask{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:0 7px;margin-right:6px}
+  .ask.yes{background:var(--green-bg);color:var(--green)} .ask.partly{background:var(--accent-soft);color:var(--accent)} .ask.no{background:var(--chip);color:var(--muted)}
+  td.co .leak{color:var(--red);font-size:11px;display:block;margin-top:4px}
+  td.jak{background:color-mix(in oklab,var(--island-br) 4%,transparent)} td.jak .res{display:block;margin-top:6px;font-weight:600}
+  td.jak .res::before{content:"→ ";color:var(--island-br)} td.jak .ev,td.jak .up{display:block;margin-top:5px;color:var(--muted);font-size:11.5px;font-family:"IBM Plex Mono",monospace}
+  tr.no td{opacity:.62}
+  td.jak .ans{margin-top:6px;padding:6px 8px;border-radius:10px;background:color-mix(in oklab,var(--island-br) 7%,transparent);font-size:12.5px}
+  td.jak .ans-h{display:block;color:var(--muted)} td.jak .ans-h b{color:var(--ink)}
+  td.jak .ans .lbl{display:block;margin-top:5px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:650}
+  td.jak .ans-s code{display:block;white-space:pre-wrap;word-break:break-word;margin-top:2px} td.jak .ans-of{display:block}
+  td.jak .ans ul{margin:4px 0 0;padding-left:16px} td.jak .ans li{margin:2px 0} td.jak .ans .then{color:var(--muted)}
+  details.dw{margin-top:6px} details.dw>summary{cursor:pointer;color:var(--island-br);font-size:11.5px;font-family:"IBM Plex Mono",monospace}
+  details.nie{border-top:1px dashed var(--line)} details.nie>summary{cursor:pointer;padding:9px 18px;color:var(--muted);font-size:13px}
+  .empty{border:2px dashed var(--line);border-radius:14px;padding:50px 20px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">purpose-structure-map</p>
+    <h1 id="t">Problem i rozwiązanie</h1>
+    <p class="intro">Po lewej obecna struktura: kto woła wyspę i które metody. Po prawej problem: pytania, na które odpowiada
+      pojęcie, ich decyzje i grupy. <b>Złącz</b> przenosi pytania do klas, które na nie odpowiadają; wtedy zaznaczenie
+      grupy, decyzji albo pytania podświetla te klasy i klientów, którzy o nie pytają.</p>
+    <div class="strony"><span class="strona roz"><b>ROZWIĄZANIE</b> obecna struktura: klienci → wyspa</span>
+      <span class="strona pro"><b>PROBLEM</b> grupa → decyzja → pytanie</span></div>
+  </header>
+  <div class="bar">
+    <button class="btn big" id="b-merge">🔗 Złącz</button>
+    <span class="spacer"></span>
+    <button class="btn" id="b-in" title="Przybliż">＋</button><button class="btn" id="b-out" title="Oddal">－</button>
+    <button class="btn" id="b-fit">⤢ Cały widok</button>
+  </div>
+  <div class="stage"><svg id="g" viewBox="0 0 1700 1000"></svg>
+    <div class="hint">🖱️ kółko: zoom · przeciągnij: przesuń · klik: zaznacz, drugi klik albo Esc: odznacz · nazwy metod widać po przybliżeniu</div></div>
+  <section class="cross" id="cross" hidden></section>
+</div>
+<script>
+(function(){
+"use strict";
+const D = JSON.parse(document.getElementById("embedded-data").textContent);
+const svg = document.getElementById("g"), NS = "http://www.w3.org/2000/svg";
+if (!D) { document.querySelector(".stage").outerHTML = '<div class="empty"><h2>Brak danych</h2>Zbuduj stronę skryptem scripts/build.mjs.</div>'; return; }
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const cut = (s, n) => (s = String(s || "")).length > n ? s.slice(0, n - 1) + "…" : s;
+const MAX = 10;
+
+// ---------- model ----------
+const G = D.graph, unit = new Map(G.units.map(u => [u.id, u])), meth = new Map(G.methods.map(m => [m.id, m]));
+const isl = new Set(G.island_files);
+const edges = new Map();
+for (const c of G.calls) {
+  const s = meth.get(c.from_method), t = meth.get(c.to_method); if (!s || !t) continue;
+  const k = s.unit + "|" + t.unit;
+  if (!edges.has(k)) edges.set(k, { id: "e" + edges.size, from: s.unit, to: t.unit, internal: isl.has(s.unit), methods: new Map(), toIds: new Set(), calls: [], rule: false });
+  const e = edges.get(k); e.methods.set(t.name, (e.methods.get(t.name) || 0) + 1); e.toIds.add(t.id); e.calls.push(c); if (c.rule) e.rule = true;
+}
+const E = [...edges.values()].sort((a, b) => b.calls.length - a.calls.length);
+const calls = f => E.filter(e => e.from === f && !e.internal).reduce((a, e) => a + e.calls.length, 0);
+const clients = [...new Set(E.filter(e => !e.internal).map(e => e.from))];
+const islandUnits = G.island_files.filter(f => unit.has(f));
+const inCount = f => new Set(E.filter(e => e.to === f && !e.internal).map(e => e.from)).size;
+islandUnits.sort((a, b) => inCount(b) - inCount(a) || unit.get(a).name.localeCompare(unit.get(b).name));
+const iIdx = new Map(islandUnits.map((f, i) => [f, i]));
+const bary = f => { const t = E.filter(e => e.from === f && !e.internal).map(e => iIdx.get(e.to)); return t.reduce((a, b) => a + b, 0) / (t.length || 1); };
+const topClients = new Set([...clients].sort((a, b) => calls(b) - calls(a)).slice(0, MAX));
+clients.sort((a, b) => bary(a) - bary(b) || unit.get(a).name.localeCompare(unit.get(b).name));
+const topClasses = new Set(islandUnits.slice(0, MAX));
+const chan = new Map();
+for (const en of G.entries || []) { const u = meth.get(en.method)?.unit; if (!u) continue;
+  if (!chan.has(u)) chan.set(u, {}); chan.get(u)[en.channel] = (chan.get(u)[en.channel] || 0) + 1; }
+
+const Q = D.questions, qById = new Map(Q.map(q => [q.id, q]));
+for (const q of Q) { const n = new Map(); for (const m of q.methods) { const u = meth.get(m.id)?.unit; if (u) n.set(u, (n.get(u) || 0) + 1); }
+  q.units = [...n.keys()]; q.anchor = [...n].sort((a, b) => (isl.has(b[0]) - isl.has(a[0])) || b[1] - a[1])[0]?.[0];
+  q.mset = new Set(q.methods.map(m => m.id)); q.pain = q.pains.some(p => !p.on || p.on === "question"); }   // pains sit on top questions (groups); a question only when an older result says so
+for (const e of E) e.qs = Q.filter(q => [...e.toIds].some(id => q.mset.has(id)));
+for (const q of Q) q.askers = E.filter(e => !e.internal && e.qs.includes(q)).map(e => e.from);
+// problem tree: group → decision → question
+const sameDec = (a, b) => a === b || a.startsWith(b + ".") || b.startsWith(a + ".");
+// a decision no group took stays in the tree at the decision level, with no group above it
+const groups = D.groups.map(g => ({ ...g, decs: [] })), solo = [];
+for (const q of Q) {
+  const d = q.decisions[0] || "—";
+  let g = groups.find(g => q.decisions.some(x => g.decisions.some(y => sameDec(x, y))));
+  if (!g) { g = solo.find(g => g.decisions[0] === d);
+    if (!g) solo.push(g = { id: "S-" + d, name: D.decisions[d] || d, what_changes: "", solo: true, decisions: [d], decs: [] }); }
+  let dn = g.decs.find(x => x.id === d); if (!dn) g.decs.push(dn = { id: d, key: g.id + ":" + d, text: D.decisions[d] || d, role: g.roles?.[d], qs: [] });
+  dn.qs.push(q);
+}
+const G2 = [...groups, ...solo].filter(g => g.decs.length);
+const DEC = new Map(G2.flatMap(g => g.decs.map(d => [d.key, d])));
+const leaves = s => s.k === "q" ? [qById.get(s.id)] : s.k === "dec" ? DEC.get(s.id).qs : s.k === "group" ? G2.find(g => g.id === s.id).decs.flatMap(d => d.qs) : [];
+
+// island name: wrapped into lines that fit the box (font shrinks only if one word is still too long)
+const ISL_LINES = (() => { const words = ("🏝️ " + D.island.name).split(/\s+/), out = []; let l = "";
+  for (const w of words) { if (l && (l + " " + w).length > 28) { out.push(l); l = w; } else l = l ? l + " " + w : w; }
+  if (l) out.push(l); return out; })();
+
+// ---------- state & layout ----------
+const S = { open: false, allCli: false, allCls: false, merged: false, sel: null };
+const X = { cli: 40, cliW: 220, isl: 590, clsW: 280, qW: 330, decW: 250, grpW: 210 };
+X.mq = X.isl + X.clsW + 90; X.pq = X.mq + 400; X.pd = X.pq + X.qW + 60; X.pg = X.pd + X.decW + 50; X.W = X.pg + X.grpW + 40;
+const RC = 30, RI = 46, RQ = 52, TOP = 120;
+const PROBLEM = new Set(["q", "dec", "group"]);
+// the solution side reacts to a problem selection only after „Złącz”; separated, only the problem branch lights up
+function related() {
+  const s = S.sel; if (!s || s.k === "island") return null;
+  if (PROBLEM.has(s.k) && !S.merged) return null;
+  if (s.k === "unit") return new Set([s.id, ...E.filter(e => e.from === s.id || e.to === s.id).flatMap(e => [e.from, e.to])]);
+  if (s.k === "edge") { const e = E.find(x => x.id === s.id); return new Set([e.from, e.to]); }
+  return new Set(leaves(s).flatMap(q => [...q.units, ...q.askers]));
+}
+function visibleSets() {
+  const R = related() || new Set();
+  return { vc: clients.filter(f => S.allCli || topClients.has(f) || R.has(f)),
+           vi: islandUnits.filter(f => S.allCls || topClasses.has(f) || R.has(f)) };
+}
+function layout() {
+  const P = {}, { vc, vi } = visibleSets();
+  const two = vc.length > 28, perCol = two ? Math.ceil(vc.length / 2) : vc.length;
+  const moreC = clients.length > vc.length || S.allCli, moreI = islandUnits.length > vi.length || S.allCls;
+  const hC = (perCol + (moreC ? 1 : 0)) * RC, hI = (vi.length + (moreI ? 1 : 0)) * RI;
+  const hQ = Q.length * RQ + G2.length * 18;
+  const H = Math.max(hC, hI + 46 + ISL_LINES.length * 21, hQ, 460);
+  const cy = TOP;   // every column starts at the top, right under its label
+  vc.forEach((f, i) => { const col = two ? i % 2 : 0, row = two ? Math.floor(i / 2) : i;
+    P["u:" + f] = { x: X.cli + col * (X.cliW + 30), y: cy + row * RC + col * RC / 2, w: X.cliW, h: 24, o: 1 }; });
+  const moreCpos = { x: X.cli, y: cy + perCol * RC + (two ? RC / 2 : 0), w: X.cliW, h: 24 };
+  P["m:cli"] = { ...moreCpos, o: moreC ? 1 : 0 };
+  for (const f of clients) if (!P["u:" + f]) P["u:" + f] = { ...moreCpos, o: 0 };
+  const head = 46 + ISL_LINES.length * 21, iy = TOP + head;
+  const box = S.open ? { x: X.isl - 20, y: TOP, w: X.clsW + 40, h: head + hI + 12 } : { x: X.isl - 20, y: TOP, w: X.clsW + 40, h: Math.max(220, head + 40) };
+  P.island = { ...box, o: 1 };
+  vi.forEach((f, i) => P["u:" + f] = S.open ? { x: X.isl, y: iy + i * RI, w: X.clsW, h: 36, o: 1 } : { x: box.x + box.w / 2 - 4, y: box.y + box.h / 2, w: 8, h: 4, o: 0 });
+  const moreIpos = S.open ? { x: X.isl, y: iy + vi.length * RI, w: X.clsW, h: 30 } : { x: box.x + box.w / 2 - 4, y: box.y + box.h / 2, w: 8, h: 4 };
+  P["m:cls"] = { ...moreIpos, o: S.open && moreI ? 1 : 0 };
+  for (const f of islandUnits) if (!P["u:" + f]) P["u:" + f] = { ...moreIpos, o: 0 };
+  // problem: questions in tree order; a decision sits at the middle of its questions, a group at the middle of its decisions
+  let y = TOP - 18;
+  for (const g of G2) {
+    y += 18; const g0 = y;
+    for (const d of g.decs) { const d0 = y;
+      for (const q of d.qs) { P["q:" + q.id] = { x: X.pq, y, w: X.qW, h: 44, o: 1 }; y += RQ; }
+      P["d:" + d.key] = { x: X.pd, y: d0 + (y - d0 - RQ) / 2, w: X.decW, h: 44, o: 1 }; }
+    if (!g.solo) P["g:" + g.id] = { x: X.pg, y: g0 + (y - g0 - RQ) / 2 - 4, w: X.grpW, h: 52, o: 1 };
+  }
+  P.hdR = { x: X.cli, y: 50, o: 1 }; P.hdP = { x: S.merged ? X.mq : X.pq, y: 50, o: 1 };
+  if (S.merged) {
+    const qs = Q.map(q => { const a = P["u:" + q.anchor]; const ok = a && a.o > .5; return { q, ay: ok ? a.y + a.h / 2 - 22 : (S.open ? P["m:cls"].y : box.y + box.h / 2 - 22) }; });
+    qs.sort((a, b) => a.ay - b.ay); let last = -1e9;
+    for (const { q, ay } of qs) { const yy = Math.max(ay, last + RQ - 4); P["q:" + q.id] = { x: X.mq, y: yy, w: X.qW, h: 44, o: 1 }; last = yy; }
+  }
+  P.H = Math.max(H, ...Q.map(q => P["q:" + q.id].y + 60 - TOP)) + TOP + 40;
+  return P;
+}
+
+// ---------- drawing ----------
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const defs = el("defs", {}, svg); defs.innerHTML = '<filter id="cien" x="-10%" y="-20%" width="120%" height="150%"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity=".18"/></filter>';
+const L = { tl: el("g", {}, svg), e: el("g", {}, svg), conn: el("g", {}, svg), n: el("g", {}, svg), lab: el("g", {}, svg), hd: el("g", {}, svg) };
+const N = {};
+function node(key, cls, title, lines, onclick) {
+  const g = el("g", { class: "n " + cls }, L.n), r = el("rect", { rx: 9, filter: "url(#cien)" }, g);
+  const ts = lines.map(([t, c]) => { const x = el("text", { class: c || "" }, g); x.textContent = t; return x; });
+  if (title) el("title", {}, g).textContent = title;
+  g.addEventListener("click", ev => { ev.stopPropagation(); if (!moved) onclick(); });
+  return N[key] = { g, r, ts };
+}
+const hdR = el("text", { class: "hd roz" }, L.hd), hdRs = el("text", { class: "hd-sub" }, L.hd);
+const hdP = el("text", { class: "hd pro" }, L.hd), hdPs = el("text", { class: "hd-sub" }, L.hd);
+hdR.textContent = "ROZWIĄZANIE";
+hdRs.textContent = `obecna struktura: ${clients.length} klas-klientów → ${islandUnits.length} klas wyspy, ${G.calls.length} wywołań`;
+{ const g = el("g", { class: "n isl" }, L.n), r = el("rect", { rx: 24, filter: "url(#cien)" }, g), t = el("text", { class: "isl-name" }, g), t2 = el("text", { class: "mt" }, g);
+  ISL_LINES.forEach(l => { const ts = el("tspan", {}, t); ts.textContent = l; }); el("title", {}, g).textContent = D.island.name;
+  g.addEventListener("click", ev => { ev.stopPropagation(); if (moved) return; S.open = !S.open; if (!S.open) S.merged = false; select({ k: "island" }, false); update(); });
+  N.island = { g, r, ts: [t, t2] }; L.n.insertBefore(g, L.n.firstChild); }
+for (const f of clients) { const u = unit.get(f), ch = chan.get(f);
+  node("u:" + f, "cli", u.file, [[cut(u.name, 27), "nm"], [ch ? Object.entries(ch).map(([c, n]) => `${/job/i.test(c) ? "⏱" : "🌐"} ${c} ×${n}`).join(" ") : "", "badge"]], () => select({ k: "unit", id: f })); }
+node("m:cli", "more", "", [["", "nm"]], () => { S.allCli = !S.allCli; update(); });
+for (const f of islandUnits) { const u = unit.get(f), n = G.methods.filter(m => m.unit === f).length;
+  node("u:" + f, "cls", u.file, [["⚙️ " + cut(u.name, 30), "nm"], [`${inCount(f)} klientów · ${n} metod`, "mt"]], () => select({ k: "unit", id: f })); }
+node("m:cls", "more", "", [["", "nm"]], () => { S.allCls = !S.allCls; update(); });
+const painsTxt = ps => ps.map(p => `${p.id} ${p.thing}${p.reports ? ` (${p.reports} zgł.)` : ""}`).join(" · ");
+for (const g of G2) if (!g.solo) { const pn = g.pains?.length;
+  node("g:" + g.id, "grp" + (pn ? " pain" : ""), g.name + (g.what_changes ? `\nco się zmienia: ${g.what_changes}` : "") + (pn ? `\n🔥 bolączki: ${painsTxt(g.pains)}` : ""),
+    [[(pn ? "🔥 " : "🎯 ") + cut(g.name, 27), "nm"], [pn ? cut("bolączka " + g.pains.map(p => p.id).join(", ") + " · " + (g.what_changes || ""), 34) : cut(g.what_changes || "", 32), "mt"]], () => select({ k: "group", id: g.id })); }
+const decPains = d => (D.decision_pains || {})[d.id] || [];
+for (const d of DEC.values()) node("d:" + d.key, "dec" + (decPains(d).length ? " pain" : ""), `${d.id}: ${d.text}` + (decPains(d).length ? `\n🔥 bolączki: ${painsTxt(decPains(d))}` : ""), [[(decPains(d).length ? "🔥 " : "⚖️ ") + d.id, "qid"], [cut(d.text, 30), ""], [cut(d.role || "", 34), "mt"]], () => select({ k: "dec", id: d.key }));
+for (const q of Q) node("q:" + q.id, "q" + (q.pain ? " pain" : ""), q.text,
+  [[(q.pain ? "🔥 " : "❓ ") + q.id, "qid"], [cut(q.short, 38), ""], [(q.pain ? "bolączka " + q.pains.map(p => p.id).join(" ") + " · " : "") + `${q.askers.length} klientów · ${q.methods.length} metod`, "mt"]],
+  () => select({ k: "q", id: q.id }));
+for (const e of E) {
+  e.p = el("path", { class: "e" + (e.internal ? " int" : "") + (e.rule ? " rule" : "") }, L.e);
+  e.hit = el("path", { class: "hit" }, L.e);
+  e.lab = el("g", { class: "el" }, L.lab); e.lbg = el("rect", { class: "bg", rx: 5 }, e.lab); e.lt = el("text", {}, e.lab);
+  for (const x of [e.hit, e.lab]) x.addEventListener("click", ev => { ev.stopPropagation(); if (!moved) select({ k: "edge", id: e.id }); });
+}
+const conns = []; for (const q of Q) for (const u of q.units) conns.push({ q, u, p: el("path", { class: "conn" + (q.pain ? " pain" : "") }, L.conn) });
+const tlines = [];
+for (const g of G2) for (const d of g.decs) { if (!g.solo) tlines.push({ a: "d:" + d.key, b: "g:" + g.id, qs: d.qs, p: el("path", { class: "tl" }, L.tl) });
+  for (const q of d.qs) tlines.push({ a: "q:" + q.id, b: "d:" + d.key, qs: [q], p: el("path", { class: "tl" }, L.tl) }); }
+
+let P = layout(), cur = JSON.parse(JSON.stringify(P));
+const curve = (x1, y1, x2, y2) => { const dx = Math.max(40, Math.abs(x2 - x1) / 2); return `M${x1},${y1} C${x1 + dx},${y1} ${x2 - dx},${y2} ${x2},${y2}`; };
+const anchorOf = f => (isl.has(f) && !S.open) ? cur.island : cur["u:" + f];
+const scale = () => svg.clientWidth / svg.viewBox.baseVal.width;
+const set = (e, a) => { for (const k in a) e.setAttribute(k, a[k]); };
+const selQs = () => new Set(S.sel ? leaves(S.sel).map(q => q.id) : []);
+function edgeHot(e) { const s = S.sel; if (!s || s.k === "island") return false;
+  if (PROBLEM.has(s.k) && !S.merged) return false;
+  if (s.k === "edge") return s.id === e.id; if (s.k === "unit") return e.from === s.id || e.to === s.id;
+  const sq = selQs(); return e.qs.some(q => sq.has(q.id)); }   // inside the island too: who in the island asks it
+function edgeLabel(e) {
+  if (S.merged) { const sq = selQs(), qs = e.qs.filter(q => sq.has(q.id)); if (!qs.length) return null;
+    return { q: true, pain: qs.some(q => q.pain), text: `${qs[0].id} ${cut(qs[0].short, 32)}` + (qs.length > 1 ? `  +${qs.length - 1}` : "") }; }
+  const ms = [...e.methods.keys()]; return { q: false, text: ms.slice(0, 3).join(", ") + (ms.length > 3 ? `  +${ms.length - 3} więcej` : "") };
+}
+function render() {
+  const sc = scale(), detail = sc > 0.85, R = related(), sq = selQs();
+  const b = cur.island; set(N.island.r, { x: b.x, y: b.y, width: b.w, height: b.h });
+  const nl = ISL_LINES.length, ny = S.open ? b.y + 30 : b.y + b.h / 2 - nl * 10.5;
+  [...N.island.ts[0].children].forEach((ts, i) => set(ts, { x: b.x + 18, y: ny + i * 21 }));
+  set(N.island.ts[1], { x: b.x + 18, y: ny + (nl - 1) * 21 + 20 });
+  if (!N.island.fs) { const w = N.island.ts[0].getBBox().width; N.island.fs = w > b.w - 36 ? Math.floor(17 * (b.w - 36) / w) : 17;
+    N.island.ts[0].style.fontSize = N.island.fs + "px"; }
+  N.island.ts[1].textContent = S.open ? `${islandUnits.length} klas · klik: zamknij` : `${islandUnits.length} klas · klik: otwórz`;
+  const { vc, vi } = visibleSets();
+  N["m:cli"].ts[0].textContent = S.allCli ? "▲ zwiń do 10" : `… +${clients.length - vc.length} klientów`;
+  N["m:cls"].ts[0].textContent = S.allCls ? "▲ zwiń do 10" : `… +${islandUnits.length - vi.length} klas`;
+  for (const k in N) { if (k === "island") continue; const p = cur[k]; if (!p) continue; const n = N[k];
+    set(n.r, { x: p.x, y: p.y, width: p.w, height: p.h }); n.g.style.opacity = p.o; n.g.style.pointerEvents = p.o < .3 ? "none" : "";
+    if (k.startsWith("q:") || k.startsWith("d:")) { set(n.ts[0], { x: p.x + 10, y: p.y + 18 }); set(n.ts[1], { x: p.x + (k.startsWith("q:") ? 64 : 62), y: p.y + 18 }); set(n.ts[2], { x: p.x + 10, y: p.y + 35 }); }
+    else if (k.startsWith("u:") && !isl.has(k.slice(2))) { set(n.ts[0], { x: p.x + 9, y: p.y + 16 }); set(n.ts[1], { x: p.x + p.w - 6, y: p.y + 16, "text-anchor": "end" }); }
+    else if (k.startsWith("m:")) set(n.ts[0], { x: p.x + 12, y: p.y + p.h / 2 + 4 });
+    else n.ts.forEach((t, i) => set(t, { x: p.x + 10, y: p.y + 17 + i * 15 }));
+  }
+  const placed = Object.keys(N).filter(k => k !== "island" && cur[k] && cur[k].o > .3).map(k => ({ x: cur[k].x, y: cur[k].y, width: cur[k].w, height: cur[k].h }));
+  const free = bx => !placed.some(o => bx.x < o.x + o.width && o.x < bx.x + bx.width && bx.y < o.y + o.height && o.y < bx.y + bx.height);
+  for (const e of E) {
+    const a = anchorOf(e.from), b2 = anchorOf(e.to), hot = edgeHot(e);
+    const shown = a && b2 && a.o > .3 && b2.o > .3 && (!e.internal || (S.open && hot)) && (!S.merged || hot);
+    if (!shown) { set(e.p, { d: "" }); set(e.hit, { d: "" }); e.lab.style.display = "none"; continue; }
+    let d;
+    if (e.internal) { const x = a.x + a.w, y1 = a.y + a.h / 2, y2 = b2.y + b2.h / 2, bulge = 24 + Math.min(110, Math.abs(y2 - y1) / 6); d = `M${x},${y1} C${x + bulge},${y1} ${x + bulge},${y2} ${x},${y2}`; }
+    else d = curve(a.x + a.w, a.y + a.h / 2, b2.x, b2.y + b2.h / 2 + (S.open ? 0 : (clients.indexOf(e.from) / clients.length - .5) * 160));
+    set(e.p, { d, "stroke-width": Math.min(6, 1 + Math.log2(e.calls.length)) }); set(e.hit, { d });
+    const lab = edgeLabel(e), qmode = !!(S.merged && lab && lab.q);
+    e.p.classList.toggle("q", qmode); e.p.classList.toggle("pain", qmode && lab.pain); e.p.classList.toggle("hot", hot && !qmode);
+    e.p.classList.toggle("dim", !!R && !hot);
+    const show = lab && !e.internal && S.open && (detail || (S.sel && S.sel.k === "edge" && hot) || qmode);
+    e.lab.style.display = show ? "" : "none";
+    if (show) { e.lt.textContent = lab.text; e.lab.setAttribute("class", "el" + (lab.q ? " ql" : "") + (lab.pain ? " pain" : ""));
+      const len = e.p.getTotalLength(); let ok = false;
+      for (const t of [.3, .45, .2, .6, .38, .52]) { const pt = e.p.getPointAtLength(len * t); set(e.lt, { x: pt.x + 4, y: pt.y + 4 });
+        const bb = e.lt.getBBox(), bx = { x: bb.x - 4, y: bb.y - 2, width: bb.width + 8, height: bb.height + 4 };
+        if (free(bx) || (S.sel && S.sel.k === "edge")) { placed.push(bx); set(e.lbg, bx); ok = true; break; } }
+      if (!ok) e.lab.style.display = "none"; }
+  }
+  for (const c of conns) { const qp = cur["q:" + c.q.id], up = anchorOf(c.u);
+    const on = S.merged && sq.has(c.q.id) && qp && up && up.o > .3;
+    set(c.p, { d: on ? curve(up.x + up.w, up.y + up.h / 2, qp.x, qp.y + 22) : "" }); }
+  for (const t of tlines) { const a = cur[t.a], b3 = cur[t.b]; if (!a || !b3) continue;
+    const hotT = t.qs.some(q => sq.has(q.id));     // after „Złącz” only the selected branch keeps its lines
+    set(t.p, { d: S.merged && !hotT ? "" : curve(a.x + a.w, a.y + a.h / 2, b3.x, b3.y + b3.h / 2) }); t.p.classList.toggle("hot", hotT); }
+  set(hdR, { x: cur.hdR.x, y: cur.hdR.y }); set(hdRs, { x: cur.hdR.x, y: cur.hdR.y + 22 });
+  set(hdP, { x: cur.hdP.x, y: cur.hdP.y }); set(hdPs, { x: cur.hdP.x, y: cur.hdP.y + 22 });
+  hdP.textContent = S.merged ? "PROBLEM NA ROZWIĄZANIU" : "PROBLEM";
+  hdPs.textContent = S.merged ? "pytanie leży przy klasie, która na nie odpowiada; kliknij pytanie, decyzję albo grupę" : `${Q.length} pytań · ${DEC.size} decyzji · ${G2.length} grup`;
+  for (const k in N) { if (k === "island") continue; const n = N[k]; let on = true;
+    if (k.startsWith("u:") || k.startsWith("m:")) on = !R || (k.startsWith("u:") && R.has(k.slice(2)));
+    else if (sq.size) {
+      if (k.startsWith("q:")) on = sq.has(k.slice(2));
+      else if (k.startsWith("d:")) on = DEC.get(k.slice(2)).qs.some(q => sq.has(q.id));
+      else if (k.startsWith("g:")) on = G2.find(g => g.id === k.slice(2)).decs.some(d => d.qs.some(q => sq.has(q.id)));
+    } else if (R) {
+      if (k.startsWith("q:")) on = qById.get(k.slice(2)).units.some(u => R.has(u));
+      else on = false;
+    }
+    n.g.classList.toggle("dim", !on);
+    n.g.classList.toggle("hot", !!R && on && k.startsWith("u:") && S.sel.k !== "unit" && S.sel.k !== "edge");
+    const s = S.sel; n.g.classList.toggle("sel", !!s && ((s.k === "unit" && k === "u:" + s.id) || (s.k === "q" && k === "q:" + s.id) || (s.k === "dec" && k === "d:" + s.id) || (s.k === "group" && k === "g:" + s.id)));
+  }
+}
+function animate() {
+  const from = JSON.parse(JSON.stringify(cur)), to = P, t0 = performance.now(), ms = 650;
+  const step = t => { const p = Math.min(1, (t - t0) / ms), k = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    for (const key in to) { if (typeof to[key] !== "object") { cur[key] = to[key]; continue; } const a = from[key] || to[key], b = to[key]; cur[key] = {};
+      for (const f in b) cur[key][f] = typeof b[f] === "number" ? a[f] + (b[f] - a[f]) * k : b[f]; }
+    render(); if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function update(fit) {
+  renderCross();
+  P = layout(); animate();
+  const bm = document.getElementById("b-merge"); bm.classList.toggle("on", S.merged); bm.textContent = S.merged ? "↔ Rozdziel" : "🔗 Złącz";
+  if (fit) fitView();
+}
+
+// ---------- details ----------
+const qLink = q => `<b class="mono">${q.id}</b> ${esc(q.text)}`;
+const mName = id => { const m = meth.get(id); return m ? `${unit.get(m.unit)?.name || ""}.${m.name}` : id; };
+const askersHtml = qs => { const sq = new Set(qs.map(q => q.id)), es = E.filter(e => !e.internal && e.qs.some(q => sq.has(q.id)));
+  return es.length ? `<ul>${es.map(e => `<li><b>${esc(unit.get(e.from).name)}</b> → ${[...new Set(e.calls.filter(c => qs.some(q => q.mset.has(c.to_method))).map(c => `<code>${esc(meth.get(c.from_method).name)}</code>`))].join(", ")}</li>`).join("")}</ul>` : "<p class='small muted'>tylko z wnętrza wyspy</p>"; };
+// ---------- crossing table: CO (problem language) | JAK (code) per caller ----------
+const CR = D.crossing;
+const fmtCode = t => esc(t).replace(/`([^`]+)`/g, "<code>$1</code>");
+const SHAPE = { "yes-no": "tak / nie", one: "jeden", list: "lista", number: "liczba", amount: "kwota", date: "data", text: "tekst", none: "nic (tylko wyjątek albo skutek)" };
+const ans = a => !a ? "" : `<div class="ans"><span class="ans-h">↩ zwraca: <b>${esc(SHAPE[a.shape] || a.shape || "?")}</b></span>${
+  a.structure || a.type ? `<span class="ans-s"><span class="lbl">struktura</span><code>${esc(a.structure || a.type)}</code></span>` : ""}${
+  a.of || (a.variants || []).length ? `<span class="lbl">co oznacza</span>` : ""}${a.of ? `<span class="ans-of">${esc(a.of)}</span>` : ""}${
+  (a.variants || []).length ? `<ul>${a.variants.map(v => `<li><code>${esc(v.value)}</code> ${esc(v.means || "")}${v.then ? `<span class="then"> → ${fmtCode(v.then)}</span>` : ""}</li>`).join("")}</ul>` : ""}</div>`;
+function renderCross() {
+  const box = document.getElementById("cross"); if (!CR || !CR.questions?.length) { box.hidden = true; return; }
+  box.hidden = false; const s = S.sel;
+  let qs = CR.questions, rowOk = () => true, scope = "";
+  if (s && PROBLEM.has(s.k)) { const ids = new Set(leaves(s).map(q => q.id)); qs = qs.filter(q => ids.has(q.id)); scope = " · zaznaczenie"; }
+  if (s && s.k === "unit") { const f = unit.get(s.id)?.file; rowOk = r => r.caller.file === f || r.path.some(p => p.file === f); scope = " · " + unit.get(s.id)?.name; }
+  const ord = { yes: 0, partly: 1, no: 2 };
+  const row = r => `<tr class="${r.asks || ""}"><td class="caller"><span class="cls">${esc(r.caller.class)}</span>.${esc(r.caller.method)}<span class="kind">${
+      r.entry ? (/job/i.test(r.entry.channel) ? "⏱ " : "🌐 ") + esc(r.entry.channel) + " · " : ""}${r.kind === "top-in-island" ? "na wyspie, nikt nie woła w grafie" : r.kind === "cited" ? "wskazany przez explorera" : "klient"}${r.path.length > 1 ? " · przez " + r.path.slice(1).map(p => esc(p.class + "." + p.method)).join(" → ") : ""}</span></td>
+    <td class="co">${r.missing ? '<span class="muted">nieopisane</span>' : `<span class="ask ${r.asks}">${{ yes: "pyta", partly: "częściowo", no: "nie pyta" }[r.asks] || ""}</span>${esc(r.case)}`}${r.leak?.length ? `<span class="leak">⚠ mechanizm w opisie: ${esc(r.leak.join(", "))}</span>` : ""}</td>
+    <td class="jak">${r.missing ? "" : fmtCode(r.how)}${ans(r.answer)}${r.result ? `<span class="res">${fmtCode(r.result)}</span>` : ""}${(r.up || []).length || (r.evidence || []).length ? `<details class="dw"><summary>dowody (${(r.evidence || []).length})${(r.up || []).length ? " · wyżej w kodzie" : ""}</summary>${(r.up || []).length ? `<span class="up">↑ ${r.up.map(fmtCode).join("<br>↑ ")}</span>` : ""}<span class="ev">${(r.evidence || []).map(esc).join("<br>")}</span></details>` : ""}</td></tr>`;
+  const head = '<tr><th>Wołający</th><th class="pro">Co — problem</th><th class="roz">Jak — obecnie w kodzie</th></tr>';
+  let html = `<h2>Co i jak: pytanie × wołający</h2><p class="intro">Dla każdego wołającego osobno: <b>co</b> (pytanie w języku problemu, w sytuacji tego wołającego) i <b>jak</b> (mechanizm w kodzie, z dowodem). ${
+    CR.questions.length} pytań${scope}, pogrupowanych jak problem: kliknij grupę, żeby ją rozwinąć albo zwinąć. Zaznaczenie pytania, decyzji, grupy albo klasy na mapie zawęża tabelę.</p>`;
+  // one block per question, then grouped by the business groups of the problem tree (collapsible)
+  const blk = new Map();
+  for (const q of qs) {
+    const qq = qById.get(q.id), rows = q.rows.filter(rowOk).sort((a, b) => (ord[a.asks] ?? 3) - (ord[b.asks] ?? 3) || String(a.case).localeCompare(String(b.case)));
+    if (!rows.length) continue;
+    const ask = rows.filter(r => r.asks !== "no"), no = rows.filter(r => r.asks === "no"), k = "q:" + q.id;
+    blk.set(q.id, { ask: ask.length, html: `<details class="cq${qq?.pain ? " pain" : ""}" data-k="${k}"${scope || OPEN.get(k) !== false ? " open" : ""}><summary class="cq-h"><span class="qid">${qq?.pain ? "🔥" : "❓"} ${esc(q.id)}</span><span class="qt">${esc(q.problem)}</span>${
+      q.summary ? `<div class="sum">${esc(q.summary)}</div>` : ""}<div class="cnt">${ask.length} wołających pyta (w tym częściowo), ${no.length} tylko dotyka tego samego kodu</div></summary>` +
+      (ask.length ? `<table class="ct">${head}${ask.map(row).join("")}</table>` : "") +
+      (no.length ? `<details class="nie"><summary>${no.length} wołających nie zadaje tego pytania — co pytają zamiast</summary><table class="ct">${head}${no.map(row).join("")}</table></details>` : "") + "</details>" });
+  }
+  for (const g of G2) {
+    const ids = [...new Set(g.decs.flatMap(d => d.qs.map(q => q.id)))].filter(id => blk.has(id));
+    if (!ids.length) continue;
+    const k = "g:" + g.id, open = scope || OPEN.get(k) === true, name = g.solo ? `${g.decs[0].id}: ${g.decs[0].text}` : g.name;
+    const gp = g.solo ? decPains(g.decs[0]) : (g.pains || []);
+    html += `<details class="cg${gp.length ? " pain" : ""}" data-k="${k}"${open ? " open" : ""}><summary><span class="cg-ic">${gp.length ? "🔥" : g.solo ? "⚖️" : "🎯"}</span><span class="cg-n">${esc(name)}</span>` +
+      `<span class="cg-c">${ids.length} ${ids.length === 1 ? "pytanie" : "pytania"} · ${ids.reduce((n, id) => n + blk.get(id).ask, 0)} wołających pyta</span>` +
+      (g.solo ? '<span class="cg-w">decyzja bez grupy</span>' : g.what_changes ? `<span class="cg-w">co się zmienia: ${esc(g.what_changes)}</span>` : "") +
+      (gp.length ? `<span class="cg-w cg-b">🔥 ${gp.map(p => `<b>${esc(p.id)} ${esc(p.thing)}</b>${p.reports ? ` · ${p.reports} zgłoszeń` : ""}${p.why ? ` — ${esc(p.why)}` : ""}`).join("<br>🔥 ")}</span>` : "") +
+      `</summary>${ids.map(id => blk.get(id).html).join("")}</details>`;
+  }
+  box.innerHTML = html;
+  box.querySelectorAll("details[data-k]").forEach(d => d.addEventListener("toggle", () => { if (!scope) OPEN.set(d.dataset.k, d.open); }));
+}
+const OPEN = new Map();   // remembered open/closed state of groups and questions (groups start closed, questions open)
+
+function select(s, redraw = true) {
+  if (S.sel && s.k !== "island" && S.sel.k === s.k && S.sel.id === s.id) { clearSel(); return; }   // second click: deselect
+  S.sel = s;
+  if (redraw) update();
+  const det = document.getElementById("det"); if (!det) return; let h = "";
+  if (s.k === "island") h = `<h3>🏝️ ${esc(D.island.name)}</h3><p class="small muted">${islandUnits.length} klas z wyniku explorera · ${clients.length} klas-klientów spoza wyspy · ${G.calls.length} wywołań${G.entries.length ? ` · ${G.entries.length} wejść (HTTP, joby)` : ""}</p>
+    <div class="lab">Klasy wyspy wg liczby klientów spoza wyspy</div><ul>${islandUnits.map(f => `<li>${esc(unit.get(f).name)} <span class="muted">— ${inCount(f)}</span></li>`).join("")}</ul>`;
+  if (s.k === "unit") { const u = unit.get(s.id), inn = E.filter(e => e.to === s.id && !e.internal), outE = E.filter(e => e.from === s.id), qs = Q.filter(q => q.units.includes(s.id));
+    h = `<h3>${isl.has(s.id) ? "⚙️" : "↗"} ${esc(u.name)}</h3><p class="small mono muted">${esc(u.file)}</p>` +
+      (qs.length ? `<div class="lab">Pytania, na które odpowiadają jej metody</div><ul>${qs.map(q => `<li>${qLink(q)}</li>`).join("")}</ul>` : "") +
+      (inn.length ? `<div class="lab">Kto woła (${inn.length} klas)</div><ul>${inn.map(e => `<li><b>${esc(unit.get(e.from).name)}</b> → ${[...e.methods].map(([m, n]) => `<code>${esc(m)}</code>${n > 1 ? "×" + n : ""}`).join(", ")}</li>`).join("")}</ul>` : "") +
+      (outE.length ? `<div class="lab">Woła na wyspie</div><ul>${outE.map(e => `<li><b>${esc(unit.get(e.to).name)}</b>: ${[...e.methods.keys()].map(m => `<code>${esc(m)}</code>`).join(", ")}</li>`).join("")}</ul>` : "") +
+      (chan.get(s.id) ? `<div class="lab">Wejścia</div><ul>${G.entries.filter(en => meth.get(en.method)?.unit === s.id).map(en => `<li>${esc(en.channel)}: <code>${esc(en.name)}</code> ${esc((en.routes || []).join(", "))}</li>`).join("")}</ul>` : ""); }
+  if (s.k === "edge") { const e = E.find(x => x.id === s.id);
+    h = `<h3>${esc(unit.get(e.from).name)} → ${esc(unit.get(e.to).name)}</h3>` +
+      (e.qs.length ? `<div class="lab">Pytania na tej krawędzi</div><ul>${e.qs.map(q => `<li>${qLink(q)}</li>`).join("")}</ul>` : "") +
+      `<div class="lab">Wywołania (${e.calls.length})</div><ul>${e.calls.map(c => `<li><code>${esc(mName(c.from_method))}:${c.line ?? "?"}</code> → <code>${esc(meth.get(c.to_method).name)}</code>${c.rule ? ` <span class="chip">${esc(c.rule)}</span>` : ""}</li>`).join("")}</ul>`; }
+  if (s.k === "q") { const q = qById.get(s.id);
+    h = `<h3>${q.pain ? "🔥" : "❓"} ${q.id}: ${esc(q.text)}</h3><p class="small muted">Jak pyta system: ${esc(q.system)}</p>` +
+      (q.pains.length ? `<p>${q.pains.map(p => `<span class="chip pain">${p.id} ${esc(p.thing)}</span>`).join(" ")}</p>` : "") +
+      `<p class="small">Decyzje: ${q.decisions.map(d => `<b>${d}</b> ${esc(cut(D.decisions[d], 80))}`).join("; ") || "—"}</p>` +
+      `<div class="lab">Gdzie w kodzie</div><ul>${q.methods.map(m => `<li><code>${esc(mName(m.id))}</code> <span class="muted small">${esc(m.via[0])}${m.via.length > 1 ? ` +${m.via.length - 1}` : ""}</span></li>`).join("")}</ul>` +
+      `<div class="lab">Kto o to pyta (klienci tych metod)</div>${askersHtml([q])}`; }
+  if (s.k === "dec" || s.k === "group") { const qs = leaves(s);
+    const head = s.k === "dec" ? (d => `<h3>⚖️ ${esc(d.id)}: ${esc(d.text)}</h3>${d.role ? `<p class="small muted">${esc(d.role)}</p>` : ""}`)(DEC.get(s.id))
+      : (g => `<h3>🎯 ${esc(g.name)}</h3><p class="small">Co się zmienia: ${esc(g.what_changes || "—")}<br>Kto zauważy: ${esc(g.who_notices || "—")}</p>`)(G2.find(g => g.id === s.id));
+    const units = [...new Set(qs.flatMap(q => q.units))].filter(u => isl.has(u));
+    h = head + `<div class="lab">Pytania (${qs.length})</div><ul>${qs.map(q => `<li>${qLink(q)}</li>`).join("")}</ul>` +
+      `<div class="lab">Klasy wyspy, które odpowiadają (${units.length})</div><p class="small">${units.map(u => `<code>${esc(unit.get(u).name)}</code>`).join(" ")}</p>` +
+      `<div class="lab">Kto pyta</div>${askersHtml(qs)}`; }
+  det.innerHTML = h;
+  const sq = selQs(); document.querySelectorAll("#leg li").forEach(li => li.classList.toggle("hot", sq.has(li.dataset.q)));
+}
+function clearSel() {
+  S.sel = null; update();
+  if (document.getElementById("det")) document.getElementById("det").innerHTML = '<h3>🔎 Szczegóły</h3><p class="muted small">Kliknij wyspę, klasę, krawędź, pytanie, decyzję albo grupę.</p>';
+  document.querySelectorAll("#leg li.hot").forEach(li => li.classList.remove("hot"));
+}
+svg.addEventListener("click", () => { if (moved || !S.sel) return; clearSel(); });
+document.addEventListener("keydown", ev => { if (ev.key === "Escape" && S.sel) clearSel(); });
+
+function legend() { if (!document.getElementById("leg")) return;
+  document.getElementById("leg-h").textContent = `${Q.length} pytań. Na mapie skrót, tu pełna treść; klik pokazuje pytanie na mapie.`;
+  document.getElementById("leg").innerHTML = Q.map(q => `<li data-q="${q.id}" class="${q.pain ? "pain" : ""}"><b class="id">${q.pain ? "🔥" : "❓"} ${q.id}</b>${esc(q.text)}
+    <span class="po">${q.pains.map(p => `${p.id} ${esc(p.thing)}`).join(" · ")}${q.pains.length ? " · " : ""}${[...new Set(q.methods.map(m => mName(m.id)))].slice(0, 4).map(esc).join(", ")}${q.methods.length > 4 ? " …" : ""}</span></li>`).join("");
+  document.querySelectorAll("#leg li").forEach(li => li.addEventListener("click", () => { S.open = true; select({ k: "q", id: li.dataset.q });
+    setTimeout(() => zoomTo(["q:" + li.dataset.q, ...qById.get(li.dataset.q).units.map(u => "u:" + u)]), 700); svg.scrollIntoView({ behavior: "smooth", block: "center" }); }));
+}
+
+// ---------- zoom / pan ----------
+const vb = () => svg.getAttribute("viewBox").split(" ").map(Number);
+function setVB(v) { svg.setAttribute("viewBox", v.join(" ")); render(); }
+function animVB(target) { const s = vb(), t0 = performance.now(), ms = 450;
+  const k = t => { const p = Math.min(1, (t - t0) / ms), e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    setVB(s.map((v, i) => v + (target[i] - v) * e)); if (p < 1) requestAnimationFrame(k); }; requestAnimationFrame(k); }
+function fitView() { const H = P.H, W = X.W, r = svg.clientHeight / svg.clientWidth; let w = W, h = W * r; if (h < H) { h = H; w = H / r; } animVB([-(w - W) / 2, 0, w, h]); }
+function zoomTo(keys) { const ps = keys.map(k => P[k]).filter(p => p && p.o > .5); if (!ps.length) return;
+  const x0 = Math.min(...ps.map(p => p.x)) - 40, y0 = Math.min(...ps.map(p => p.y)) - 40, x1 = Math.max(...ps.map(p => p.x + p.w)) + 40, y1 = Math.max(...ps.map(p => p.y + p.h)) + 40;
+  const r = svg.clientHeight / svg.clientWidth; let w = x1 - x0, h = y1 - y0; if (h / w > r) w = h / r; else h = w * r; animVB([(x0 + x1 - w) / 2, (y0 + y1 - h) / 2, w, h]); }
+function zoomBy(f, cx, cy) { const v = vb(); if (cx == null) { cx = v[0] + v[2] / 2; cy = v[1] + v[3] / 2; } setVB([cx - (cx - v[0]) * f, cy - (cy - v[1]) * f, v[2] * f, v[3] * f]); }
+svg.addEventListener("wheel", ev => { ev.preventDefault(); const v = vb(), r = svg.getBoundingClientRect();
+  zoomBy(ev.deltaY > 0 ? 1.12 : 1 / 1.12, v[0] + (ev.clientX - r.left) / r.width * v[2], v[1] + (ev.clientY - r.top) / r.height * v[3]); }, { passive: false });
+let drag = null, moved = false;
+svg.addEventListener("pointerdown", ev => { drag = { x: ev.clientX, y: ev.clientY, v: vb() }; moved = false; });
+window.addEventListener("pointermove", ev => { if (!drag) return; const dx = ev.clientX - drag.x, dy = ev.clientY - drag.y;
+  if (!moved && Math.abs(dx) + Math.abs(dy) > 5) { moved = true; svg.classList.add("drag"); }
+  if (moved) { const f = drag.v[2] / svg.clientWidth; setVB([drag.v[0] - dx * f, drag.v[1] - dy * f, drag.v[2], drag.v[3]]); } });
+window.addEventListener("pointerup", () => { drag = null; svg.classList.remove("drag"); setTimeout(() => moved = false, 0); });
+document.getElementById("b-in").onclick = () => zoomBy(1 / 1.3); document.getElementById("b-out").onclick = () => zoomBy(1.3);
+document.getElementById("b-fit").onclick = fitView;
+document.getElementById("b-merge").onclick = () => { S.merged = !S.merged; if (S.merged) S.open = true; update(true); };
+document.getElementById("t").textContent = "Problem i rozwiązanie: " + (D.island.seed || D.island.name);
+window.addEventListener("resize", () => render());
+legend(); update(true);
+})();
+</script>
+</body>
+</html>
