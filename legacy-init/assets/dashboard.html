@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Legacy init — kandydaci do eksploracji</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#e5eaf2;background:#111923}body{max-width:1140px;margin:auto;padding:28px}h1{font-size:28px}h2{font-size:20px}p,li{line-height:1.6}a{color:#8fc9ff}button,input{font:inherit;padding:10px;border:1px solid #56657b;border-radius:6px;background:#1b2939;color:inherit}button{cursor:pointer;margin:4px}button[aria-selected=true]{border-color:#8fc9ff}input{width:min(560px,90%);margin:12px 0}.card{background:#1b2939;border:1px solid #35465a;border-radius:10px;padding:18px;margin:14px 0}.muted{color:#b1bdcd}.tag{display:inline-block;padding:4px 9px;background:#263b51;border-radius:5px;margin:3px}.warning{border-left:4px solid #eebd69;padding:12px;background:#302b24}.metrics{display:flex;flex-wrap:wrap;gap:10px}.metric{padding:10px;border:1px solid #56657b;border-radius:6px}details{margin:12px 0}summary{cursor:pointer}code{overflow-wrap:anywhere}section[hidden]{display:none}ul{padding-left:24px}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+</style>
+<h1>Mapa kandydatów do eksploracji</h1><p id="subtitle" class="muted"></p>
+<div class="warning">Rozpoznanie wstępne. Klasy, pliki i tabele są miejscami do zbadania. Ich znaczenie domenowe i granice wysp pozostają do odkrycia.</div>
+<div id="stats" class="metrics"></div><p id="verification" class="warning"></p>
+<nav aria-label="Widoki"><button data-tab="candidates" aria-selected="true">Kandydaci</button><button data-tab="sources">Źródła i braki</button><button data-tab="history">Przebiegi</button></nav>
+<section id="candidates"><input id="search" aria-label="Szukaj kandydata" placeholder="Szukaj nazwy lub uzasadnienia…"><div id="cards"></div></section>
+<section id="sources" hidden></section><section id="history" hidden></section>
+<script type="application/json" id="data">__INIT_DATA__</script>
+<script>
+'use strict';
+const d=JSON.parse(document.getElementById('data').textContent);
+const el=(tag,text,parent,cls)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;if(parent)parent.append(x);return x;};
+const link=(path,label,parent)=>{const a=el('a',label,parent);a.href=d.link_base+path.split('/').map(encodeURIComponent).join('/');return a;};
+const list=(values,parent)=>{const ul=el('ul',undefined,parent);for(const v of values)el('li',typeof v==='string'?v:JSON.stringify(v),ul);};
+document.getElementById('subtitle').textContent=d.repo+' • commit '+(d.source.revision||'nieznany')+' • '+d.run_id;
+const stats=document.getElementById('stats');
+for(const [value,label] of [[d.pool_count,'jednostek w grafie'],[d.screened_units,'jednostek przejrzanych'],[d.entries_observed,'wykrytych wejść'],[d.candidates.filter(c=>c.decision==='candidate').length,'kandydatów']])el('div',value+' — '+label,stats,'metric');
+document.getElementById('verification').textContent='Weryfikacja źródeł: '+d.verification.source_check+'. Recenzja nakładek: '+d.verification.independent_review+'. Wyniki wymagają sprawdzenia tych statusów przed ponownym użyciem.';
+const labels={candidate:'Kandydat',navigation:'Punkt nawigacji — np. delegowanie',deferred:'Odłożony / nieodświeżony'};
+function cards(query=''){
+ const root=document.getElementById('cards');root.replaceChildren();
+ for(const c of d.candidates){
+  if(!JSON.stringify(c).toLowerCase().includes(query.toLowerCase()))continue;
+  const card=el('article',undefined,root,'card');el('h2',(c.priority?c.priority+'. ':'')+c.label,card);el('span',labels[c.decision],card,'tag');el('code',c.id,card);
+  if(c.metrics){
+   const m=c.metrics;el('p','Wejścia z innych jednostek: '+m.entries+' • bezpośrednie jednostki wołające: '+m.direct_caller_units.length+' • jednostki wywoływane: '+m.outgoing_units.length,card);
+   if(m.behaviour_entries!==undefined)el('p','Wejścia do metod zmieniających stan: '+m.state_change_entries+' • do metod decydujących: '+m.decision_entries+' • łącznie: '+m.behaviour_entries+(m.entries>=20&&m.behaviour_entries<=0.1*m.entries?' • wzorzec danych referencyjnych (czytane szeroko, zmieniane rzadko)':''),card);
+   el('p','Kanały: '+JSON.stringify(m.by_channel)+' • wejścia wewnątrz jednostki: '+m.local_entry_ids.length,card,'muted');
+   el('p','Liczba węzłów wejściowych w grafie; nie liczba niezależnych procesów biznesowych.',card,'muted');
+  }else el('p','Osiągalność: nieustalona w tym przebiegu.',card,'muted');
+  for(const reason of c.reasons){el('p',reason.observation,card);list(reason.evidence.map(e=>e.root+': '+e.path+' — '+e.locator),card);}
+  if(c.limits.length)list(c.limits,card);
+  const detail=el('details',undefined,card);el('summary','Miejsca w kodzie, wejścia i próbki dróg',detail);
+  list(c.locations.map(x=>x.name+' — '+x.file+':'+x.line),detail);
+  if(c.metrics){
+   el('p','Identyfikatory wejść (do odczytu w graph.db / overlay.json):',detail);list(c.metrics.entry_ids,detail);
+   for(const w of c.metrics.witnesses)el('pre',w.method_path.join(' → '),detail);
+  }
+  link(d.graph_bundle+'/overlay.json','Nakładki, identyfikatory i drogi',detail);el('p','Pełne wyniki dla konkretnego celu mogą wymagać osobnego przebiegu entry-flows.',detail,'muted');
+  el('p','Eksploracja domeny: '+c.exploration,card);
+  for(const target of c.analysis_links)link(target.path,target.label||target.path,card);
+ }
+ if(!root.childElementCount)el('p','Brak nominacji dla tego filtra. Zobacz pokrycie i braki.',root);
+}
+cards();document.getElementById('search').addEventListener('input',e=>cards(e.target.value));
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('section').forEach(s=>s.hidden=s.id!==b.dataset.tab);document.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',String(x===b)));}));
+const sources=document.getElementById('sources');el('h2','Zakres: '+d.scope,sources);list(d.limits,sources);
+for(const [key,value] of Object.entries(d.coverage)){el('h3',key,sources);list(value,sources);}
+for(const p of [d.project_context,d.evidence_plan,d.graph_bundle+'/graph.db',d.graph_bundle+'/overlay.json']){link(p,p,sources);el('br',undefined,sources);}
+el('h3','Zachowane pliki i odciski SHA-256',sources);
+for(const [p,hash] of Object.entries(d.provenance)){const row=el('p',undefined,sources);link(p,p,row);el('code',' '+hash,row);}
+const history=document.getElementById('history');el('h2','Zachowane przebiegi',history);
+for(const r of d.history){const p=el('p',undefined,history);link(r.report,r.run_id,p);}
+el('p','Plik HTML nie uruchamia agentów. Przekaż agentowi ID kandydata i ścieżkę workspace.',history);
+</script></html>
