@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testy sceny</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { display: block; overflow: auto; padding: 16px; }
+  #scena { width: 1200px; height: 660px; }
+  #wynik { white-space: pre-wrap; font-size: 12px; }
+  .ok { color: var(--c-ok); } .zle { color: var(--c-deny); }
+</style>
+</head>
+<body>
+<h1 id="stan">Testy sceny: uruchamiam…</h1>
+<pre id="wynik"></pre>
+<svg id="scena" viewBox="0 0 1200 660"></svg>
+<script type="module">
+// Przechodzi przez każdy etap demo (tryb „całe nagranie”) i sprawdza, co pokazuje scena.
+import { wczytajNagranie, zbuduj } from "./dane.js";
+import { Scena } from "./scena.js";
+import { etapyKroku, warstwyDoPozycji, serwerMcp } from "./etapy.js";
+import { WARSTWY } from "./rozdzialy.js";
+
+const WSZYSTKIE = new Set(WARSTWY.map(w => w.id));
+const svg = document.getElementById("scena");
+const scena = new Scena(svg, () => {});
+
+const bledy = [];
+let sprawdzen = 0;
+const sprawdz = (warunek, opis) => { sprawdzen++; if (!warunek) bledy.push(opis); };
+const KOPERTA = ["k-system", "k-narzedzia", "koperta", "polecenie", "wysylka", "model", "petla"]; // przy pętli: pusta koperta następnego requestu
+const ZE_STRZALKA = ["prompt", "wysylka", "powrot", "pytanie", "koniec", "petla"];
+
+for (const plik of ["campsite.jsonl", "demo.jsonl", "kompakcja.jsonl", "pytanie-i-internet.jsonl"]) {
+const model = zbuduj(await wczytajNagranie("przyklad", plik));
+scena.serwery = [];
+scena.ustawSerwery([...new Set(model.glowne.flatMap(w => w.req.tools.map(t => serwerMcp(t.nazwa))).filter(Boolean))]);
+const etapy = w => etapyKroku(w, model, WSZYSTKIE);
+for (const w of model.glowne) {
+  const E = etapy(w);
+  let arkuszePoprz = -1;
+  E.forEach((e, i) => {
+    const W = warstwyDoPozycji(model, w, i, etapy);
+    scena.ustawWarstwy(W);
+    scena.rysuj(w, model, E, i);
+    const gdzie = `${plik} #${w.nr} etap ${i + 1} ${e.typ}`;
+    const byl = typ => E.slice(0, i + 1).some(x => x.typ === typ);
+
+    // 1. widoczność warstw: element warstwy widać dokładnie wtedy, gdy warstwa jest włączona
+    svg.querySelectorAll("[data-warstwa]").forEach(g => {
+      const id = g.dataset.warstwa;
+      if (!id || id === "pusty") return;
+      sprawdz(g.classList.contains("ukryta") === !W.has(id), `${gdzie}: element warstwy „${id}” ${W.has(id) ? "ukryty mimo włączenia" : "widoczny mimo wyłączenia"}`);
+    });
+    // 2. koperta tylko przy składaniu, wysyłce i pracy modelu; przy modelu nie zasłania napisu
+    const koperta = svg.querySelector("#s-koperta").childElementCount > 0;
+    sprawdz(koperta === KOPERTA.includes(e.typ), `${gdzie}: koperta ${koperta ? "widoczna" : "niewidoczna"}`);
+    if (koperta && ["wysylka", "model"].includes(e.typ)) {
+      const k = svg.querySelector("#s-koperta").getBoundingClientRect();
+      const napis = [...svg.querySelectorAll("#s-model text")].find(t => t.textContent.startsWith("bezstanowy")).getBoundingClientRect();
+      sprawdz(k.bottom <= napis.top + 1, `${gdzie}: koperta zasłania napis „bezstanowy”`);
+    }
+    // 3. koperta zwrotna dopiero od powrotu odpowiedzi
+    const zwrotna = svg.querySelector("#s-zwrotna").childElementCount > 0;
+    sprawdz(zwrotna === byl("powrot"), `${gdzie}: koperta zwrotna ${zwrotna ? "przed powrotem" : "brak po powrocie"}`);
+    // 4. strzałka tylko na czas etapu przepływu
+    const strzalka = !!svg.querySelector("#s-ruch .strzalka");
+    const powinna = ZE_STRZALKA.includes(e.typ) || (e.typ === "wykonanie" && (e.aktor?.startsWith("mcp:") || e.aktor === "czlowiek" || e.aktor === "internet"))
+      || (e.typ === "wynik" && W.has("stos"));
+    sprawdz(strzalka === powinna, `${gdzie}: strzałka ${strzalka ? "jest, a nie powinno" : "brak"}`);
+    // 5. aktywny hook: dokładnie ten z etapu
+    for (const [n, g] of Object.entries(scena.hookiG)) {
+      const ma = g.classList.contains("hook-aktywny");
+      sprawdz(ma === (e.hook === n), `${gdzie}: hook ${n} ${ma ? "aktywny bez powodu" : "nieaktywny"}`);
+    }
+    // 6. serwer MCP aktywny tylko przy jego wykonaniu
+    for (const [n, g] of Object.entries(scena.serwerG || {}))
+      sprawdz(g.classList.contains("aktywny") === (e.aktor === `mcp:${n}`), `${gdzie}: serwer MCP ${n} aktywność niezgodna`);
+    // 7. człowiek aktywny tylko w swoich etapach
+    sprawdz(svg.querySelector("#s-czlowiek").classList.contains("aktywny") === (e.aktor === "czlowiek"), `${gdzie}: człowiek aktywność niezgodna`);
+    // 8. stos w obrębie kroku nie maleje — z wyjątkiem kompakcji, po której musi zmaleć
+    const arkusze = svg.querySelectorAll("#s-stos .arkusz").length;
+    if (e.typ === "kompakcja") sprawdz(arkusze < arkuszePoprz, `${gdzie}: kompakcja nie skróciła stosu (${arkuszePoprz} → ${arkusze})`);
+    else if (!byl("kompakcja")) sprawdz(arkusze >= arkuszePoprz, `${gdzie}: stos zmalał (${arkuszePoprz} → ${arkusze})`);
+    if (e.typ === "reset" && w.reset !== "wznowienie") sprawdz(arkusze === 0, `${gdzie}: po resecie historii stos nie jest pusty (${arkusze})`);
+    if (e.typ === "reset" && w.reset === "wznowienie") sprawdz(arkusze > 0, `${gdzie}: wznowiona sesja bez wczytanej historii na stosie`);
+    arkuszePoprz = arkusze;
+    // 10. udział w kroku: elementy pojawiające się tylko czasem widać tylko, gdy brały udział w tym kroku (do tego etapu)
+    const dotad = E.slice(0, i + 1);
+    const widac = g => !!g && !g.classList.contains("bez-udzialu") && !g.closest(".ukryta");
+    for (const [n, g] of Object.entries(scena.hookiG))
+      sprawdz(widac(g) === (W.has("hooki") && dotad.some(x => x.hook === n)), `${gdzie}: ikona hooka ${n} ${widac(g) ? "widoczna bez udziału" : "niewidoczna mimo udziału"}`);
+    for (const [n, g] of Object.entries(scena.serwerG || {}))
+      sprawdz(widac(g) === (W.has("mcp") && dotad.some(x => x.aktor === `mcp:${n}`)), `${gdzie}: serwer MCP ${n} ${widac(g) ? "widoczny bez udziału" : "niewidoczny mimo udziału"}`);
+    const brama = dotad.some(x => ["uprawnienia", "pytanie"].includes(x.typ) || (x.typ === "hook-pre" && x.c?.status === "hook"));
+    sprawdz(widac(svg.querySelector("#s-bramka")) === (W.has("uprawnienia") && brama), `${gdzie}: bramka widoczność niezgodna z udziałem`);
+    sprawdz(widac(svg.querySelector("#s-wykonanie")) === (W.has("narzedzia") && dotad.some(x => x.typ === "wykonanie")), `${gdzie}: wykonanie widoczność niezgodna z udziałem`);
+    const skill = dotad.some(x => x.c?.nazwa === "Skill" || (x.typ === "doklejki" && /SKILL/.test(x.tytul)));
+    sprawdz(widac(scena.szufladaG.skille) === (W.has("skille") && W.has("narzedzia") && skill), `${gdzie}: szuflada skilli widoczność niezgodna z udziałem`);
+    // 11. internet i dymek pytania: tylko na czas swojego etapu
+    sprawdz(widac(svg.querySelector("#s-internet")) === (e.typ === "wykonanie" && e.aktor === "internet"), `${gdzie}: internet widoczny poza swoim etapem albo brak`);
+    sprawdz(widac(svg.querySelector("#s-dymek")) === (e.typ === "wykonanie" && e.c?.nazwa === "AskUserQuestion"), `${gdzie}: dymek pytania niezgodny z etapem`);
+    if (e.typ === "wykonanie" && e.c?.nazwa === "AskUserQuestion") sprawdz(svg.querySelector("#s-czlowiek").classList.contains("aktywny"), `${gdzie}: człowiek nie podświetlony przy pytaniu`);
+    if (e.typ === "wykonanie") sprawdz(!!svg.querySelector("#s-wykonanie .ikona-narzedzia"), `${gdzie}: brak ikony narzędzia przy wykonaniu`);
+    // 9. bramka pokazuje decyzję na etapie uprawnień
+    if (e.typ === "uprawnienia") sprawdz(svg.querySelector("#s-bramka text:nth-of-type(2)")?.textContent !== "—", `${gdzie}: bramka bez decyzji`);
+  });
+}
+}
+
+// --resume: nagranie zaczęte w środku sesji (od tury 3 demo) — stos pełny i widoczny od pierwszego etapu
+{
+  const demo = await wczytajNagranie("przyklad", "demo.jsonl");
+  const m0 = zbuduj(demo);
+  const od = m0.tury[2].wymiany[0].ts;
+  const model = zbuduj(demo.filter(r => r.ts >= od - 1));
+  const w = model.glowne[0];
+  const etapy = x => etapyKroku(x, model, WSZYSTKIE);
+  const W = warstwyDoPozycji(model, w, 0, etapy);
+  scena.ustawWarstwy(W);
+  scena.rysuj(w, model, etapy(w), 0);
+  const arkusze = svg.querySelectorAll("#s-stos .arkusz").length;
+  sprawdz(etapy(w)[0].typ === "reset" && w.reset === "wznowienie", "--resume: pierwszy etap to nie „wznowiona sesja”");
+  sprawdz(W.has("stos") && !svg.querySelector("#s-stos").classList.contains("ukryta"), "--resume: stos niewidoczny na pierwszym etapie");
+  sprawdz(arkusze >= w.wczytane, `--resume: na stosie ${arkusze} kartek, a wczytano ${w.wczytane} wiadomości`);
+}
+
+// na żywo przed odpowiedzią człowieka: dymek i człowiek, bez karty wyniku i bez strzałki z narzędzia do koperty
+{
+  const L = await wczytajNagranie("przyklad", "pytanie-i-internet.jsonl");
+  const w0 = zbuduj(L).glowne.find(w => w.wywolania.some(c => c.nazwa === "AskUserQuestion"));
+  const koniec = Math.max(...L.filter(r => r.id === w0.id).map(r => r.ts));
+  const model = zbuduj(L.filter(r => r.ts <= koniec));
+  const w = model.glowne.at(-1), E = etapyKroku(w, model, WSZYSTKIE), i = E.length - 1;
+  scena.ustawWarstwy(WSZYSTKIE);
+  await scena.przejscie(w, model, E, i, 50);
+  sprawdz(!svg.querySelector("#s-dymek").classList.contains("bez-udzialu") && !svg.querySelector("#s-dymek").closest(".ukryta"), "czekanie: brak dymka pytania");
+  sprawdz(svg.querySelector("#s-czlowiek").classList.contains("aktywny"), "czekanie: człowiek nie podświetlony");
+  sprawdz(svg.querySelectorAll("#s-ruch .strzalka").length === 1, `czekanie: strzałek ${svg.querySelectorAll("#s-ruch .strzalka").length}, powinna być jedna (do człowieka)`);
+  sprawdz(/czekam/.test(svg.querySelector("#s-wykonanie").textContent), "czekanie: wykonanie nie mówi, że czeka");
+}
+
+document.getElementById("stan").textContent = bledy.length ? `✖ ${bledy.length} błędów na ${sprawdzen} sprawdzeń` : `✔ ${sprawdzen} sprawdzeń, 0 błędów`;
+document.getElementById("stan").className = bledy.length ? "zle" : "ok";
+document.getElementById("wynik").textContent = bledy.slice(0, 200).join("\n");
+window.WYNIK_TESTOW = { sprawdzen, bledy };
+</script>
+</body>
+</html>

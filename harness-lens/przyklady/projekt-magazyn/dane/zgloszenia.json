@@ -1,0 +1,5 @@
+[
+  {"id": "MAG-101", "tytul": "Brak podkładek na magazynie, wstrzymane wydania", "status": "otwarte", "towar": "podkladka"},
+  {"id": "MAG-087", "tytul": "Nakrętki M6 poniżej minimum od tygodnia", "status": "otwarte", "towar": "nakretka-m6"},
+  {"id": "MAG-054", "tytul": "Błędny stan śrub po inwentaryzacji", "status": "zamkniete", "towar": "sruba-m6"}
+]

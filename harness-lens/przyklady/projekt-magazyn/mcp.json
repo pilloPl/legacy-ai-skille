@@ -1,0 +1,3 @@
+{ "mcpServers": {
+  "baza": { "command": "node", "args": ["mcp/baza.mjs"] },
+  "tracker": { "command": "node", "args": ["mcp/tracker.mjs"] } } }

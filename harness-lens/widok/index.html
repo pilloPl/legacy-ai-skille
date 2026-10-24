@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harness Lens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="siatka-tlo" aria-hidden="true"></div>
+
+<header class="naglowek">
+  <div class="logo"><span class="logo-znak">▞</span> harness lens</div>
+  <div class="zrodlo">
+    <label>nagranie <select id="nagrania"></select></label>
+    <button id="na-zywo" class="przelacznik" title="Bieżąca sesja z proxy; wyłącz, żeby wybrać nagranie (L)">● na żywo</button>
+  </div>
+  <div class="opcje">
+    <label class="metafora-wybor" title="Ta sama scena opowiedziana inną historią: dla ludzi nietechnicznych">metafora <select id="metafora"></select></label>
+    <button id="widok-tabela" class="przelacznik" aria-pressed="false" title="Tabela requestów: prawdziwy czas i tokeny (T)">tabela</button>
+    <button id="pokazowy" class="przelacznik" title="Rozmyj treści (P)">tryb pokazowy</button>
+    <button id="motyw" class="przelacznik" title="Jasny / ciemny">jasny</button>
+  </div>
+</header>
+
+<nav class="warstwy" id="warstwy" aria-label="Warstwy"></nav>
+
+<main class="uklad">
+  <aside class="log" aria-label="Przebieg">
+    <h2 id="log-naglowek">przebieg</h2>
+    <ol id="log"></ol>
+  </aside>
+
+  <section class="scena-kontener">
+    <div class="rozdzial" id="rozdzial"></div>
+    <div class="scena-ramka">
+      <svg id="scena" viewBox="0 0 1200 660" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Scena: człowiek, harness i model"></svg>
+      <div class="zoom-info" id="zoom-info" hidden>Esc: wróć do całości</div>
+    </div>
+    <div class="tabela-ramka" id="tabela" hidden></div>
+    <div class="narracja" id="narracja" aria-live="polite"></div>
+    <div class="sterowanie">
+      <button id="krok-wstecz" title="Poprzedni krok (↑)">⏮</button>
+      <button id="etap-wstecz" title="Poprzedni etap (←)">◂ etap</button>
+      <button id="graj" class="przelacznik" aria-pressed="false" title="Tryb: manual (strzałki) albo auto (kolejny etap co tyle, ile ustawia tempo). Spacja przełącza.">manual</button>
+      <button id="etap-dalej" title="Następny etap (→)">etap ▸</button>
+      <button id="krok-dalej" title="Następny krok (↓)">⏭</button>
+      <label class="tempo" title="Czas jednego etapu">tempo <input type="range" id="tempo" min="600" max="5000" step="200"> <span id="tempo-wart"></span></label>
+      <span id="pozycja" class="pozycja"></span>
+    </div>
+    <div class="os" id="os" aria-label="Oś kroków"></div>
+  </section>
+
+  <aside class="inspektor" id="inspektor-panel" aria-label="Szczegóły" hidden>
+    <div class="okruszki"><span id="okruszki"></span><button id="zamknij" title="Zamknij (Esc)">✕</button></div>
+    <p class="most" id="most" hidden></p>
+    <div class="inspektor-tresc" id="inspektor-tresc"></div>
+  </aside>
+</main>
+
+<footer class="stopka">
+  <span class="pomoc">←/→ etap · ↑/↓ krok · spacja odtwórz · T tabela · PgUp/PgDn rozdział <span class="tylko-technicznie">· 1–9 warstwy · 0 wyłącz wszystko</span> · klik = szczegóły</span>
+  <span class="nasluch" id="nasluch"><span class="spinner"></span> <span id="nasluch-tekst">ładowanie</span></span>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
