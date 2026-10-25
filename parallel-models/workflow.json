@@ -1,0 +1,915 @@
+{
+  "nazwa": "parallel-models",
+  "opis": "Nowe rozwiązanie wpinane obok starego modelu w kilka miejsc w kodzie, za jednym API w języku CO, potem przełączane wajchą w działaniu. Workflow bada hipotezę, że da się je wpiąć z takim samym zachowaniem. Niczego nie wdraża i nie zostawia aplikacji działającej w dwóch trybach. Dowodem są scenariusze zielone na obu modelach, test zgodności, nagranie okienek prowadzących do przepiętych miejsc (na seedzie) na obu modelach i przełączenie wajchą w działaniu tylko tego, co przepięte; reszta systemu zostaje na starym modelu. Aplikację uruchamiasz wyłącznie po to, żeby nagrać te okienka. Archetyp z mappera i bolączki z crossingu to jedno z możliwych źródeł.",
+  "plaszczyzny": [
+    {
+      "id": "mapper",
+      "nazwa": "źródło rozwiązania",
+      "podpis": "np. party-mapper z poprzedniego zadania"
+    },
+    {
+      "id": "swappable-dsl",
+      "nazwa": "swappable-dsl",
+      "podpis": "nowy model obok starego, to samo zachowanie"
+    },
+    {
+      "id": "parallel-model-router",
+      "nazwa": "parallel-model-router",
+      "podpis": "przełączanie w działaniu, z porównaniem"
+    }
+  ],
+  "kroki": [
+    {
+      "id": "mapper",
+      "plaszczyzna": "mapper",
+      "nr": "",
+      "nazwa": "wynik mappera",
+      "krotko": "albo inne źródło",
+      "po_co": "Skąd bierze się nowe rozwiązanie i miejsca, w które ma wejść. W szkoleniu: mapper archetypu dostaje bolączki z adresami w kodzie i oddaje wstępną specyfikację. Poza szkoleniem wystarczy opis nowego rozwiązania i lista miejsc w kodzie.",
+      "wejscie": [
+        {
+          "plik": "analiza/archetypy.md",
+          "sekcja": "## Wystąpienia od agentów",
+          "po_co": "wystąpienie archetypu ze skanu"
+        },
+        {
+          "plik": "prompt pogłębienia",
+          "sekcja": "# BOLĄCZKI Z ADRESAMI W KODZIE",
+          "po_co": "bolączki z adresami w kodzie"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "analiza/archetypy.md",
+          "sekcja": "## Pogłębienie: <archetyp>",
+          "po_co": "wstępna specyfikacja: mapowanie, „Co i jak”, decyzje"
+        },
+        {
+          "plik": "analiza/archetypy.md",
+          "sekcja": "### Bolączki z adresami w kodzie",
+          "po_co": "bolączki przekazane dalej"
+        },
+        {
+          "plik": "analiza/archetypy.md",
+          "sekcja": "### Implementacja referencyjna",
+          "po_co": "link do implementacji"
+        }
+      ],
+      "moze": [
+        "pytać człowieka w rundach"
+      ],
+      "nie_moze": [
+        "czytać więcej kodu niż klasa z adresu i jej otoczenie",
+        "oceniać, czy archetyp rozwiązuje bolączkę"
+      ],
+      "bramka": {
+        "czlowiek": "rundy pytań mappera",
+        "testy": null,
+        "zrzuty": null
+      },
+      "stop": [],
+      "specyfikacja": "źródło (kopiowane bez zmian w kroku 1)",
+      "kod": {
+        "legacy": "",
+        "nowy": ""
+      },
+      "slowo": "źródło",
+      "spec_krotko": "wynik mappera"
+    },
+    {
+      "id": "swappable-dsl.1",
+      "plaszczyzna": "swappable-dsl",
+      "nr": "1",
+      "nazwa": "przygotowanie specyfikacji",
+      "krotko": "specyfikacja w repo",
+      "po_co": "Zamienić źródło na wspólną specyfikację w gicie: czym jest stary model, czym nowe rozwiązanie, słowniki i kandydaci na miejsca. Od tej chwili każdy krok tylko ją rozwija.",
+      "wejscie": [
+        {
+          "plik": "analiza/archetypy.md",
+          "sekcja": "## Pogłębienie: <archetyp>",
+          "po_co": "źródło rozwiązania"
+        },
+        {
+          "plik": "analiza/<wyspa>/crossing.json",
+          "po_co": "czy wołający pyta, kształt odpowiedzi"
+        },
+        {
+          "plik": "pom.xml / package.json / …",
+          "po_co": "komendy testów i uruchomienia"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "specyfikacje/<obszar>/zrodlo.md",
+          "po_co": "źródło dosłownie, nigdy nie zmieniane"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/stan.json",
+          "po_co": "stan, komendy testów, baza, słownik zakazany maszynowo (zakazane)"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Stary model",
+          "po_co": "mechanizm dzisiejszy"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Nowe rozwiązanie",
+          "po_co": "czym jest rozwiązanie, implementacja"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Słowniki",
+          "po_co": "CO, mapowanie, zakazane słowa"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Kandydaci",
+          "po_co": "wiersze „Co i jak” z bolączką"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Zmiany zachowania według źródła",
+          "po_co": "gdzie źródło odpowiada inaczej"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Poza nowym rozwiązaniem",
+          "po_co": "pojęcia niezmapowane"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/bramki.jsonl",
+          "po_co": "pełna regresja na starcie"
+        }
+      ],
+      "moze": [
+        "tworzyć pliki w specyfikacje/<obszar>/",
+        "czytać kod i uruchamiać testy"
+      ],
+      "nie_moze": [
+        "zmieniać kodu",
+        "zmieniać treści źródła (kopiuje ją dosłownie)",
+        "wybierać miejsc"
+      ],
+      "bramka": {
+        "czlowiek": null,
+        "testy": "pełna regresja na starcie (baza musi być zielona)",
+        "zrzuty": null
+      },
+      "stop": [
+        "źródło bez opisu nowego rozwiązania",
+        "kandydaci bez plik:linia",
+        "baza czerwona"
+      ],
+      "specyfikacja": "powstaje",
+      "kod": {
+        "legacy": "",
+        "nowy": ""
+      },
+      "slowo": "specyfikacja",
+      "spec_krotko": "powstaje"
+    },
+    {
+      "id": "swappable-dsl.2",
+      "plaszczyzna": "swappable-dsl",
+      "nr": "2",
+      "nazwa": "wybór miejsc",
+      "krotko": "3 wołających + zapas",
+      "po_co": "Wybrać 3 miejsca w kodzie (wołających), które łatwo przepiąć na nowe API, i 1 zapas, i zamknąć je w osobnym kontrakcie. Reszta workflow pracuje już tylko na tych miejscach. Różnice modeli nie są kryterium.",
+      "wejscie": [
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Kandydaci",
+          "po_co": "z czego wybieramy"
+        },
+        {
+          "plik": "<pliki wołających z kandydatów>",
+          "po_co": "czy łatwo wpiąć"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "specyfikacje/<obszar>/miejsca.md",
+          "po_co": "kontrakt miejsc (3 wołających + zapas, odrzuceni kandydaci)"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Miejsca",
+          "po_co": "odnośnik do kontraktu"
+        }
+      ],
+      "moze": [
+        "czytać kod"
+      ],
+      "nie_moze": [
+        "pisać kodu",
+        "brać wołających, których nikt nie woła, i tych, które nie pytają",
+        "wybierać pod różnice modeli"
+      ],
+      "bramka": {
+        "czlowiek": null,
+        "testy": null,
+        "zrzuty": null
+      },
+      "stop": [
+        "mniej niż 3 kandydatów łatwych do wpięcia"
+      ],
+      "specyfikacja": "+ miejsca.md (kontrakt miejsc)",
+      "kod": {
+        "legacy": "",
+        "nowy": ""
+      },
+      "slowo": "miejsca",
+      "spec_krotko": "+ miejsca.md"
+    },
+    {
+      "id": "swappable-dsl.3",
+      "plaszczyzna": "swappable-dsl",
+      "nr": "3",
+      "nazwa": "scenariusze + sterownik legacy",
+      "krotko": "dzisiejsze zachowanie w CO",
+      "po_co": "Opisać dzisiejsze zachowanie wybranych miejsc w języku CO i dowieść na starym modelu, że nowe API je oddaje.",
+      "wejscie": [
+        {
+          "plik": "specyfikacje/<obszar>/miejsca.md",
+          "po_co": "które miejsca"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Słowniki",
+          "po_co": "język portu i scenariuszy"
+        },
+        {
+          "plik": "<pliki wołających i starego modelu z miejsca.md>",
+          "po_co": "co dziś liczy odpowiedź"
+        },
+        {
+          "plik": ".claude/skills/_shared/konwencje-nowego-kodu.md",
+          "po_co": "konwencje nowych plików"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "<moduł wołających>/src/main/…/<port>/<Port>.java + typy wartości i rekordy wyniku",
+          "po_co": "pytanie w języku CO"
+        },
+        {
+          "plik": "<moduł wołających>/src/main/…/<port>/world/<Obszar>World.java + Legacy<Obszar>World.java",
+          "po_co": "komendy sytuacji"
+        },
+        {
+          "plik": "<moduł wołających>/src/main/…/<port>/Legacy<Port>.java",
+          "po_co": "adapter nad starym kodem (zwykła klasa, nie zależy od wołającego)"
+        },
+        {
+          "plik": "<moduł wołających>/src/test/…/<port>/<Obszar>Dsl, <Obszar>Scenarios, <Obszar>LegacyDriver, <Obszar>LegacyScenariosTest",
+          "po_co": "scenariusze na starym modelu"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/stan.json",
+          "po_co": "obszar_kod, testy_krok, slownik_pliki"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Port i świat",
+          "po_co": "sygnatura, komendy świata"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Scenariusze",
+          "po_co": "given / when / then w CO"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Odstępstwa",
+          "po_co": "szew, jeśli był"
+        }
+      ],
+      "moze": [
+        "dodawać pliki",
+        "zmienić legacy tylko szwem (test)",
+        "zasilić stary model w świecie przez zachowanie produkcyjne; gdy go brak, przez repozytorium/bazę (świat używają tylko testy i seeder)"
+      ],
+      "nie_moze": [
+        "pisać nowego modelu",
+        "przepinać wołających",
+        "zmieniać istniejących testów",
+        "używać słów ze słownika zakazanego w porcie, DSL i scenariuszach",
+        "wpisywać do kontraktu portu wyjątku albo wariantu „nieznane” (wejście spoza świata = odpowiedź jak na brak)",
+        "sięgać po kandydatów spoza miejsca.md (crossing, źródło)"
+      ],
+      "bramka": {
+        "czlowiek": "akceptuje miejsca i scenariusze",
+        "testy": "scenariusze na legacy + pełna regresja + grep słownika zakazanego",
+        "zrzuty": null
+      },
+      "stop": [
+        "miejsce czerwone na legacy po 2 podejściach → nieudane, następny kandydat",
+        "zmiana legacy inna niż szew"
+      ],
+      "specyfikacja": "+ port, świat, scenariusze, odstępstwa",
+      "kod": {
+        "legacy": "szew",
+        "nowy": "port, świat, DSL, scenariusze"
+      },
+      "slowo": "scenariusze",
+      "spec_krotko": "+ scenariusze"
+    },
+    {
+      "id": "swappable-dsl.4",
+      "plaszczyzna": "swappable-dsl",
+      "nr": "4",
+      "nazwa": "nowy model",
+      "krotko": "hipoteza ze starym zachowaniem",
+      "po_co": "Zbudować nowe rozwiązanie ze specyfikacji i przepuścić przez nie te same scenariusze. Zachowuje się jak stary model; to, czym źródło się różni, potwierdza człowiek.",
+      "wejscie": [
+        {
+          "plik": "specyfikacje/<obszar>/miejsca.md",
+          "po_co": "które pytania musi umieć"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Nowe rozwiązanie",
+          "po_co": "elementy i implementacja referencyjna"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Słowniki",
+          "po_co": "mapowanie (język modelu) i słownik zakazany"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Zmiany zachowania według źródła",
+          "po_co": "co potwierdza człowiek (zakaz „źródła” dotyczy kandydatów, nie mapowania)"
+        },
+        {
+          "plik": ".claude/skills/archetype-implementer/references/<archetyp>-impl.md",
+          "po_co": "jak zbudować z referencji"
+        },
+        {
+          "plik": "<moduł wołających>/src/test/…/<port>/<Obszar>Scenarios",
+          "po_co": "te same scenariusze"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "<modul_rozwiazania>/",
+          "po_co": "moduł nowego rozwiązania (przedrostek istniejących modułów + rozwiązanie, np. campsite-party)"
+        },
+        {
+          "plik": "<modul_rozwiazania>/CLAUDE.md",
+          "po_co": "czym jest, jakim językiem mówi i jakim nie"
+        },
+        {
+          "plik": "<moduł wołających>/src/main/…/<port>/<Rozwiązanie><Port>.java + world/<Rozwiązanie><Obszar>World.java",
+          "po_co": "adapter i świat (odpowiada tylko ze swojego świata)"
+        },
+        {
+          "plik": "<moduł wołających>/src/test/…/<port>/<Obszar><Rozwiązanie>Driver, <Obszar><Rozwiązanie>ScenariosTest",
+          "po_co": "scenariusze na nowym"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Nowe rozwiązanie w kodzie",
+          "po_co": "co weszło, czego nie użyto"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Nieudane miejsca",
+          "po_co": "miejsca bez sukcesu"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Zmiany zachowania według źródła",
+          "po_co": "potwierdzenia człowieka"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/stan.json",
+          "po_co": "modul_rozwiazania, moduł w slownik_pliki"
+        }
+      ],
+      "moze": [
+        "dodawać w module nowego modelu i w adapterach",
+        "zmienić build (lista modułów, zależność modułu wołających, Dockerfile/CI z listą modułów)",
+        "odtworzyć stare zachowanie regułą w nowym modelu",
+        "tłumaczyć komendę świata na dzisiejszą semantykę w <Rozwiązanie><Obszar>World (na liście „dodane tylko do starego zachowania”)"
+      ],
+      "nie_moze": [
+        "zmieniać portu, DSL ani scenariuszy",
+        "importować legacy w module",
+        "dodawać elementów spoza specyfikacji nowego rozwiązania (brak = nieudane miejsce), poza potrzebnymi tylko do starego zachowania (wypisane w specyfikacji)",
+        "dotykać legacy poza buildem",
+        "sięgać po kandydatów spoza miejsca.md (crossing, źródło)"
+      ],
+      "bramka": {
+        "czlowiek": "przegląda moduł, potwierdza zmiany zachowania wg specyfikacji (czy legacy było błędem)",
+        "testy": "scenariusze na nowym modelu + grep słownika zakazanego",
+        "zrzuty": null
+      },
+      "stop": [
+        "miejsce czerwone po 5 podejściach → nieudane + czego brakuje (w specyfikacji czy w implementacji)",
+        "mniej niż 3 udane miejsca → stop całości"
+      ],
+      "specyfikacja": "+ nowy model, nieudane, zmiany zachowania",
+      "kod": {
+        "legacy": "build",
+        "nowy": "moduł, adapter, sterownik"
+      },
+      "slowo": "nowy model",
+      "spec_krotko": "+ model"
+    },
+    {
+      "id": "swappable-dsl.5",
+      "plaszczyzna": "swappable-dsl",
+      "nr": "5",
+      "nazwa": "wpięcie + seeder",
+      "krotko": "port u wołających, przełącznik",
+      "po_co": "Przepiąć wybranych wołających na port: abstrakcja nad starym kodem razem z przełącznikiem startowym (beany adapterów robi konfiguracja), potem seeder obu modeli, który przygotowuje też wejście do porównania (dane, atrapy usług zewnętrznych z resetem odczytu, „przygotuj wejście ponownie” dla wejścia jednorazowego) i zapisuje identyfikatory seedu do pliku w specyfikacji.",
+      "wejscie": [
+        {
+          "plik": "specyfikacje/<obszar>/miejsca.md",
+          "po_co": "których wołających przepinamy"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Port i świat",
+          "po_co": "port"
+        },
+        {
+          "plik": "<pliki wołających z miejsca.md>",
+          "po_co": "gdzie wpiąć"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "<pliki wołających z miejsca.md>",
+          "po_co": "drugi konstruktor, linia pytania (ZMIENIONE)"
+        },
+        {
+          "plik": "<moduł wołających>/src/main/…/<port>/<Obszar>Configuration.java",
+          "po_co": "przełącznik startowy"
+        },
+        {
+          "plik": "<projekt>-seeder/",
+          "po_co": "seed obu modeli; „przygotuj wejście ponownie” (komenda albo endpoint w profilu seedera); atrapy usług z resetem odczytu"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/seed-identyfikatory.txt",
+          "po_co": "identyfikatory seedu, jeden na linię (wartości, które trafiają do `input` portu) — router dzieli nimi katalog różnic na seed / poza seedem"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/stan.json",
+          "po_co": "klucz przełącznika, jak uruchomić (joby wyłączone, bez reseedu demo), seed_identyfikatory, pid_dir, test sanity w testy_krok (verify)"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/miejsca.md",
+          "po_co": "status miejsc: wpięte / nieudane; kolumny wejścia, gdy krok zmienia sposób wejścia"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Wpięcie, przełącznik, seeder",
+          "po_co": "wołający, przełącznik, seeder"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Odstępstwa",
+          "po_co": "wołający (wpięcie)"
+        }
+      ],
+      "moze": [
+        "zmienić wołającego (wpięcie)",
+        "poprawić adapter legacy z kroku 3, gdy scenariusze zostają bez zmian i zielone",
+        "dodać konfigurację i moduł seedera (seeder może pisać do bazy legacy wprost, przygotowuje dane i atrapy usług zewnętrznych do porównania, wystawia „przygotuj wejście ponownie” w profilu seedera)"
+      ],
+      "nie_moze": [
+        "zmieniać nowego modelu ani scenariuszy",
+        "wpinać miejsc spoza specyfikacji",
+        "włączać nowego modelu domyślnie",
+        "zmieniać istniejących testów",
+        "sięgać po kandydatów spoza miejsca.md (crossing, źródło)"
+      ],
+      "bramka": {
+        "czlowiek": "akceptuje wpięcie",
+        "testy": "scenariusze na obu modelach + pełna regresja na starym modelu (przełącznik domyślny) + test sanity w module aplikacji: kontekst z profilem seedera i przełącznikiem na nowym rozwiązaniu startuje, seed w obu modelach, wejścia z miejsca.md istnieją",
+        "zrzuty": null
+      },
+      "stop": [
+        "scenariusze czerwone na którymkolwiek modelu",
+        "pełna regresja na starym modelu czerwona",
+        "3 podejścia bez zielonej bramki"
+      ],
+      "specyfikacja": "+ wpięcie, przełącznik, seeder",
+      "kod": {
+        "legacy": "wołający",
+        "nowy": "konfiguracja, seeder"
+      },
+      "slowo": "wpięcie",
+      "spec_krotko": "+ wpięcie"
+    },
+    {
+      "id": "swappable-dsl.6",
+      "plaszczyzna": "swappable-dsl",
+      "nr": "6",
+      "nazwa": "okienka przepiętych miejsc",
+      "krotko": "to samo w obu modelach",
+      "po_co": "Uruchomić aplikację z seederem tylko po to, żeby nagrać okienka (ekrany) prowadzące do przepiętych miejsc (kolumna „Wejście do porównania” w miejsca.md): te same przypadki z seedu najpierw na starym, potem na nowym modelu (przełącznik startowy, restart). Wejście i odczyt zawężone do identyfikatorów seedu, nigdy zbiorcze liczby. Dane spoza seedu, joby i reszta aplikacji nie są dowodem (joby wyłącza komenda aplikacja z kroku 5). Miejsce bez ekranu sprawdza przez API (front-compare.mjs), a bez API zapisuje „brak wejścia, zostają scenariusze”.",
+      "wejscie": [
+        {
+          "plik": "specyfikacje/<obszar>/miejsca.md",
+          "po_co": "okienka (kolumna „Wejście do porównania”)"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/stan.json",
+          "po_co": "przełącznik, aplikacja, front"
+        },
+        {
+          "plik": ".claude/skills/swappable-dsl/examples/front-story.mjs",
+          "po_co": "nagranie frontu"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "specyfikacje/<obszar>/ekran/",
+          "po_co": "front/<model>/ (zrzuty po answer, film), story.html, odpowiedzi <źródło>-<model>.jsonl (front-, api-, plik-), skrypty odczytu"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Wejście do porównania i wyniki",
+          "po_co": "n/n to samo"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/miejsca.md",
+          "po_co": "kolumna „Pytania mimochodem”: pytania, które okienko zadaje przy okazji (np. lista dla domyślnego obiektu spoza seedu)"
+        }
+      ],
+      "moze": [
+        "uruchamiać aplikację, bazę w kontenerze i front",
+        "nagrywać",
+        "pisać skrypty odczytu (API, plik wyjścia), story.json i pliki przypadków w specyfikacje/<obszar>/ekran/ (bez kodu aplikacji)",
+        "uzupełnić w miejsca.md kolumnę „Pytania mimochodem”"
+      ],
+      "nie_moze": [
+        "zmieniać kodu",
+        "sięgać po kandydatów spoza miejsca.md (crossing, źródło)"
+      ],
+      "bramka": {
+        "czlowiek": "wybiera front / API / oba i ogląda nagrania okienek",
+        "testy": null,
+        "zrzuty": "okienka przepiętych miejsc na obu modelach: zrzuty i filmy (front) albo odpowiedzi API"
+      },
+      "stop": [
+        "inna odpowiedź na którymkolwiek okienku przepiętego miejsca",
+        "log przełącznika przy starcie nie potwierdza, który model odpowiadał"
+      ],
+      "specyfikacja": "+ wyniki, nagrania",
+      "kod": {
+        "legacy": "",
+        "nowy": "nagrania"
+      },
+      "slowo": "ekran / API",
+      "spec_krotko": "+ wyniki",
+      "opcja": "front, gdy aplikacja go ma; miejsce bez ekranu — API (curl / front-compare.mjs); bez API — „brak wejścia, zostają scenariusze”"
+    },
+    {
+      "id": "parallel-model-router.1",
+      "plaszczyzna": "parallel-model-router",
+      "nr": "1",
+      "nazwa": "wybór flagi",
+      "krotko": "najmniej inwazyjna",
+      "po_co": "Wybrać mechanizm przełączania bez redeployu, który najmniej rusza system, i regułę routingu.",
+      "wejscie": [
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Wpięcie, przełącznik, seeder",
+          "po_co": "stan wpięcia"
+        },
+        {
+          "plik": "<kod ustawień / biblioteka flag w projekcie>",
+          "po_co": "czym już przełączamy"
+        },
+        {
+          "plik": ".claude/skills/parallel-model-router/flag-discovery.md",
+          "po_co": "kolejność szukania"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Flaga",
+          "po_co": "mechanizm, klucze, reguła, pozycja domyślna (= przełącznik startowy), reakcja na różnicę"
+        }
+      ],
+      "moze": [
+        "czytać kod"
+      ],
+      "nie_moze": [
+        "pisać kodu",
+        "sięgać po kandydatów spoza miejsca.md (crossing, źródło)"
+      ],
+      "bramka": {
+        "czlowiek": "wybiera mechanizm, regułę i reakcję na różnicę (domyślnie log)",
+        "testy": null,
+        "zrzuty": null
+      },
+      "stop": [
+        "propozycja wymaga redeployu, choć da się bez"
+      ],
+      "specyfikacja": "+ decyzja o fladze",
+      "kod": {
+        "legacy": "",
+        "nowy": ""
+      },
+      "slowo": "flaga",
+      "spec_krotko": "+ flaga"
+    },
+    {
+      "id": "parallel-model-router.2",
+      "plaszczyzna": "parallel-model-router",
+      "nr": "2",
+      "nazwa": "router + rekonsyliacja",
+      "krotko": "trzecia implementacja portu",
+      "po_co": "Router odpowiada modelem z wajchy, opcjonalnie pyta oba i zapisuje różnice do katalogu różnic.",
+      "wejscie": [
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Flaga",
+          "po_co": "mechanizm i klucze"
+        },
+        {
+          "plik": "<moduł wołających>/src/main/…/<port>/<Obszar>Configuration.java",
+          "po_co": "co zastępujemy"
+        },
+        {
+          "plik": ".claude/skills/parallel-model-router/reconciliation.md",
+          "po_co": "format różnic"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "<moduł wołających>/src/main/…/<port>/<Port>Router.java, <Obszar>Lever.java (interfejs: model + porównanie), <Mechanizm><Obszar>Lever.java (na mechanizmie z kroku 1), <Obszar>Reconciliation.java, <Obszar>ReconciliationLog.java (+ test <Obszar>ReconciliationTest; wajcha testowa w pamięci)",
+          "po_co": "router, wajcha (bean dla routera i ekranu: position() z pozycją i źródłem — start / właściwość / nieznana wartość), rekonsyliacja"
+        },
+        {
+          "plik": "<plik kluczy flag w projekcie>",
+          "po_co": "klucze wajchy (ZMIENIONE)"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Router",
+          "po_co": "wajcha (interfejs, implementacja, testowa), kto odpowiada, transakcja przy porównaniu, katalog różnic"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/stan.json",
+          "po_co": "przelacznik: wajcha w mechanizmie wygrywa z przełącznikiem startowym; aplikacja: katalog różnic"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Odstępstwa",
+          "po_co": "klucze flagi (wajcha)"
+        }
+      ],
+      "moze": [
+        "dodawać pliki",
+        "dopisać klucze do mechanizmu flagi (wajcha)",
+        "dostosować testy przełącznika z kroku 5 (test sanity sprawdza, który model odpowiada, nie typ adaptera) i log modelu w seederze (pozycja wajchy)",
+        "zmienić konfigurację przełącznika startowego (router zastępuje adapter) i stan.json → przelacznik"
+      ],
+      "nie_moze": [
+        "zmieniać nowego ani starego modelu",
+        "zmieniać portu i scenariuszy",
+        "obsługiwać komend",
+        "udawać odpowiedzi",
+        "sięgać po kandydatów spoza miejsca.md (crossing, źródło)"
+      ],
+      "bramka": {
+        "czlowiek": "akceptuje router",
+        "testy": "testy kroku + pełna regresja",
+        "zrzuty": null
+      },
+      "stop": [
+        "wyjątek modelu, który nie odpowiada (przy porównaniu), dociera do wołającego"
+      ],
+      "specyfikacja": "+ router, odstępstwa",
+      "kod": {
+        "legacy": "klucze flagi",
+        "nowy": "router, wajcha, rekonsyliacja"
+      },
+      "slowo": "router",
+      "spec_krotko": "+ router"
+    },
+    {
+      "id": "parallel-model-router.3",
+      "plaszczyzna": "parallel-model-router",
+      "nr": "3",
+      "nazwa": "ekran wajchy",
+      "krotko": "wajcha + różnice",
+      "po_co": "Dać człowiekowi sterowanie wajchą: ekran (wajcha, checkbox rekonsyliacji, zwijane różnice) widoczny z tym samym prawem co edycja flagi, a gdy aplikacja nie ma frontu, endpoint z opisem wywołania.",
+      "wejscie": [
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Flaga",
+          "po_co": "klucze"
+        },
+        {
+          "plik": "<moduł wołających>/src/main/…/<port>/<Obszar>Lever.java, <Obszar>Reconciliation.java",
+          "po_co": "position() z pozycją i źródłem, summary(), recent(), directory()"
+        },
+        {
+          "plik": "<front systemu: nawigacja>",
+          "po_co": "gdzie dodać ekran"
+        },
+        {
+          "plik": "<odczyty projektu z prawem: endpoint albo serwis odczytu>",
+          "po_co": "gdzie projekt sprawdza prawa w odczytach; prawo edycji flagi i prawo widoczności miejsca rejestracji"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "<moduł wołających>/src/main/…/<port>/<Obszar>LeverState (odczyt: pozycja, źródło, liczniki, ostatnie różnice) + endpoint w nowej klasie modułu endpointów (nazwa według idiomu modułu; ścieżka w tej klasie, prawo jak do edycji flagi) + test endpointu",
+          "po_co": "odczyt stanu wajchy i rekonsyliacji"
+        },
+        {
+          "plik": "<front>/…/<Obszar>LeverPage albo <Obszar>LeverSection (podsekcja istniejącego ekranu) + testy frontu",
+          "po_co": "wajcha, checkbox, zwijane różnice; data-testid na panelu różnic i na licznikach (MUI dubluje id); ścieżka spoza schematu klienta API, typ odpowiedzi lokalnie"
+        },
+        {
+          "plik": "<plik nawigacji frontu>",
+          "po_co": "rejestracja ekranu (ZMIENIONE)"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/stan.json",
+          "po_co": "testy_krok: test endpointu (moduł endpointów, faza verify); testy_front"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/ekran/",
+          "po_co": "nagranie ekranu wajchy (kończy się na modelu startowym, bez porównania); liczniki mogą być zerowe"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Ekran wajchy",
+          "po_co": "gdzie, co pokazuje, prawo, endpoint"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Odstępstwa",
+          "po_co": "nawigacja frontu (ekran)"
+        }
+      ],
+      "moze": [
+        "dodać klasę odczytu w pakiecie portu, endpoint i ekran",
+        "dopisać test endpointu do testy_krok i komendę testy_front",
+        "zarejestrować ekran w nawigacji frontu",
+        "nagrać ekran wajchy (aplikacja na chwilę)"
+      ],
+      "nie_moze": [
+        "zmieniać routera ani modeli",
+        "parsować przełącznika startowego drugi raz (pozycję daje wajcha)",
+        "zmieniać wspólnego rejestru ścieżek legacy",
+        "regenerować klienta API ze schematu",
+        "sięgać po kandydatów spoza miejsca.md (crossing, źródło)"
+      ],
+      "bramka": {
+        "czlowiek": "ogląda ekran",
+        "testy": "testy kroku (endpoint) + front",
+        "zrzuty": "zrzut ekranu wajchy albo wywołanie endpointu"
+      },
+      "stop": [
+        "ekran albo endpoint widoczny bez prawa edycji flagi"
+      ],
+      "specyfikacja": "+ ekran",
+      "kod": {
+        "legacy": "nawigacja",
+        "nowy": "odczyt, endpoint, ekran"
+      },
+      "slowo": "wajcha",
+      "spec_krotko": "+ ekran",
+      "opcja": "tylko gdy aplikacja ma front; bez frontu — sam endpoint wajchy i opis wywołania"
+    },
+    {
+      "id": "parallel-model-router.4",
+      "plaszczyzna": "parallel-model-router",
+      "nr": "4",
+      "nazwa": "test zgodności",
+      "krotko": "oba modele mówią to samo",
+      "po_co": "Testy routera i test zgodności: scenariusze puszczone przez oba modele mówią to samo (nie sprawdzamy, co mówią), plus test na seedzie w module, który widzi seed. Dziedzina = to, o co pytają wołający z miejsca.md; wykluczenia wypisane jawnie.",
+      "wejscie": [
+        {
+          "plik": "<moduł wołających>/src/test/…/<port>/<Obszar>Scenarios",
+          "po_co": "sytuacje do porównania"
+        },
+        {
+          "plik": "<moduł wołających>/src/main/…/<port>/<Port>Router.java",
+          "po_co": "co testujemy"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/miejsca.md",
+          "po_co": "dziedzina testu zgodności: o co pytają wołający"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "<moduł wołających>/src/test/…/<port>/<Port>RouterTest, <Obszar>LeverTest, <Obszar>ModelsAgreementTest; <moduł, który widzi seed>/src/test/…/<Obszar>SeedAgreementTest (wspólna baza testów seedu, katalog różnic w target/), test ścieżki z osobną transakcją na zatwierdzonym świecie",
+          "po_co": "router, wajcha, zgodność (scenariusze i seed), transakcja przy porównaniu; liczbę pytań liczy sterownik routera"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Testy routera i zgodności",
+          "po_co": "co sprawdzają, dziedzina (wołający z miejsca.md) i jawne wykluczenia"
+        }
+      ],
+      "moze": [
+        "dodawać testy"
+      ],
+      "nie_moze": [
+        "zmieniać kodu produkcyjnego",
+        "sięgać po kandydatów spoza miejsca.md (crossing, źródło)"
+      ],
+      "bramka": {
+        "czlowiek": "akceptuje testy",
+        "testy": "testy routera i zgodności + pełna regresja",
+        "zrzuty": null
+      },
+      "stop": [
+        "jakakolwiek różnica w teście zgodności (scenariusze albo seed)",
+        "liczba porównań ≠ liczba pytań policzonych przez sterownik routera"
+      ],
+      "specyfikacja": "+ testy",
+      "kod": {
+        "legacy": "",
+        "nowy": "testy"
+      },
+      "slowo": "zgodność",
+      "spec_krotko": "+ testy"
+    },
+    {
+      "id": "parallel-model-router.5",
+      "plaszczyzna": "parallel-model-router",
+      "nr": "5",
+      "nazwa": "przełączenie przepiętych",
+      "krotko": "wajcha tylko na przepiętych",
+      "po_co": "Pokazać, że wajchą da się przełączyć w działaniu tylko to, co przepięte: ekran wajchy → przełączenie na nowy model z porównaniem → te same okienka przepiętych miejsc (te same przypadki z seedu) → odpowiedzi takie same, katalog różnic bez różnic dla seedu → powrót. Reszta systemu zostaje na starym modelu. Różnice dla danych spoza seedu (dane, których nowy model nie ma) nie zatrzymują przebiegu i są wynikiem hipotezy: które pytania i dane dają inne odpowiedzi i co zmieniło się w systemie po przełączeniu. To wejście do migracji danych (osobny etap, poza workflow).",
+      "wejscie": [
+        {
+          "plik": "specyfikacje/<obszar>/miejsca.md",
+          "po_co": "okienka przepiętych miejsc do nagrania"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Ekran wajchy",
+          "po_co": "jak uruchomić, ekran wajchy"
+        },
+        {
+          "plik": ".claude/skills/swappable-dsl/examples/front-story.mjs",
+          "po_co": "nagranie"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/stan.json",
+          "po_co": "aplikacja, pid_dir, seed_identyfikatory, „przygotuj wejście ponownie” (przygotowanie)"
+        }
+      ],
+      "wyjscie": [
+        {
+          "plik": "specyfikacje/<obszar>/ekran/",
+          "po_co": "nagranie z przełączeniem, kopia katalogu różnic"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "## Przełączenie na żywo",
+          "po_co": "jak przełączyć, wrócić, katalog różnic (seed / poza seedem), czego przełączenie nie obejmuje (reszta systemu, wołający spoza miejsca.md, dane spoza seedu, komendy)"
+        },
+        {
+          "plik": "specyfikacje/<obszar>/specyfikacja.md",
+          "sekcja": "### Wymaga migracji danych",
+          "po_co": "różnice spoza seedu: które pytania i dane dają inne odpowiedzi, co realnie zmieniło się w systemie po przełączeniu (np. karty demo nie poszły do partnera)"
+        }
+      ],
+      "moze": [
+        "uruchamiać aplikację",
+        "nagrywać"
+      ],
+      "nie_moze": [
+        "zmieniać kodu",
+        "sięgać po kandydatów spoza miejsca.md (crossing, źródło)"
+      ],
+      "bramka": {
+        "czlowiek": "ogląda nagranie",
+        "testy": null,
+        "zrzuty": "okienka przepiętych miejsc przed i po przełączeniu: zrzuty albo odpowiedzi API; katalog różnic: bramka.mjs --roznice <katalog> --seed <seed-identyfikatory.txt>"
+      },
+      "stop": [
+        "po przełączeniu inna odpowiedź na okienku przepiętego miejsca",
+        "log nie potwierdza przełączenia",
+        "różnice dla przypadków z seedu w katalogu różnic (inna odpowiedź na okienku przepiętego miejsca)"
+      ],
+      "specyfikacja": "+ nagranie, jak przełączyć",
+      "kod": {
+        "legacy": "",
+        "nowy": "nagrania"
+      },
+      "slowo": "przełączenie",
+      "spec_krotko": "+ nagranie",
+      "opcja": "nagranie frontu albo przez API: przełączenie wajchy endpointem i te same okienka przepiętych miejsc"
+    }
+  ],
+  "dalej": "ostatni krok szkolenia: migracja danych (wejście: specyfikacja + moduł seedera)"
+}

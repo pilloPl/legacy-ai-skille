@@ -1,0 +1,467 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Specyfikacja parallel-models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Look of the training task pages: hero with grid and glow, Fraunces headings, cards with shadow. Order: places, workflow, selected step, artifacts, specification, gates, human log, deviations. */
+:root{--tlo:#f4efe6;--tlo-2:#ece4d6;--tekst:#201a16;--mocny:#2b2420;--przygaszony:#6b5f54;--akcent:#b5632b;--akcent-jasny:#d07a3e;
+  --cyjan:#1f7a73;--ramka:#d8cdbb;--panel:#fbf8f2;--kod:#efe7da;--link:#b5632b;--zielony:#3c7a3a;--czerwony:#b0392e;--szary:#a99d8e;
+  --font-display:"Fraunces",Georgia,serif;--font-body:"IBM Plex Sans","Segoe UI",sans-serif;--font-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --cien:0 1px 2px rgba(60,40,20,.05),0 10px 30px -12px rgba(60,40,20,.18)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--tlo:#15110e;--tlo-2:#1d1712;--tekst:#f1e9dd;--mocny:#fbf5ea;--przygaszony:#ab9d8c;
+  --akcent:#e08a4c;--akcent-jasny:#f0a568;--cyjan:#5bc3b9;--ramka:#352b22;--panel:#1f1812;--kod:#241c15;--link:#f0a568;--zielony:#7fc27a;--czerwony:#ef7d72;--szary:#6f6457;
+  --cien:0 1px 2px rgba(0,0,0,.3),0 10px 30px -12px rgba(0,0,0,.6);color-scheme:dark}}
+:root[data-theme=dark]{--tlo:#15110e;--tlo-2:#1d1712;--tekst:#f1e9dd;--mocny:#fbf5ea;--przygaszony:#ab9d8c;
+  --akcent:#e08a4c;--akcent-jasny:#f0a568;--cyjan:#5bc3b9;--ramka:#352b22;--panel:#1f1812;--kod:#241c15;--link:#f0a568;--zielony:#7fc27a;--czerwony:#ef7d72;--szary:#6f6457;
+  --cien:0 1px 2px rgba(0,0,0,.3),0 10px 30px -12px rgba(0,0,0,.6);color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--tlo)}
+body{margin:0;min-height:100vh;background:var(--tlo);color:var(--tekst);font:16px/1.65 var(--font-body);-webkit-font-smoothing:antialiased;
+  background-image:linear-gradient(180deg,transparent 40%,color-mix(in oklab,var(--cyjan) 6%,transparent))}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:20px}
+.hero{position:relative;overflow:hidden;padding-block:clamp(28px,4vw,48px) clamp(22px,3vw,34px);border-bottom:1px solid var(--ramka);
+  background:radial-gradient(120% 80% at 85% -10%,color-mix(in oklab,var(--akcent) 22%,transparent),transparent 60%),
+    radial-gradient(90% 70% at -10% 110%,color-mix(in oklab,var(--cyjan) 20%,transparent),transparent 55%),linear-gradient(160deg,var(--tlo),var(--tlo-2))}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;
+  background-image:linear-gradient(var(--ramka) 1px,transparent 1px),linear-gradient(90deg,var(--ramka) 1px,transparent 1px);
+  background-size:44px 44px;-webkit-mask-image:radial-gradient(70% 70% at 60% 20%,#000,transparent);mask-image:radial-gradient(70% 70% at 60% 20%,#000,transparent)}
+.hero .wrap{position:relative}
+.hero h1{font-size:clamp(1.8rem,4vw,2.8rem);margin:0;letter-spacing:-.015em}
+.eyebrow{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--akcent);margin:0 0 12px}
+.status{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;margin-top:16px;font-family:var(--font-mono);font-size:.86rem;color:var(--przygaszony)}
+.status .now{display:inline-flex;align-items:center;gap:9px;padding:5px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--akcent);color:var(--mocny);font-weight:500}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--akcent);animation:puls 1.4s ease-in-out infinite}
+@keyframes puls{0%,100%{box-shadow:0 0 0 0 color-mix(in oklab,var(--akcent) 60%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
+.demo{font-size:.74rem;padding:2px 10px;border-radius:999px;border:1px dashed var(--ramka)}
+main{padding-block:28px 96px;display:grid;grid-template-columns:minmax(0,1fr);gap:34px}
+main>*{min-width:0}
+h1,h2,h3{font-family:var(--font-display);font-weight:560;line-height:1.15;letter-spacing:-.01em;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.35rem,2.6vw,1.75rem);margin-bottom:12px} h3{font-size:1.15rem}
+a{color:var(--link);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2px}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--kod);padding:2px 6px;border-radius:5px}
+.card{background:var(--panel);border:1px solid var(--ramka);border-radius:16px;padding:18px 22px;box-shadow:var(--cien);min-width:0}
+.k{font:500 .7rem var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--przygaszony)}
+table{border-collapse:collapse;width:100%;font-size:.9rem;background:var(--panel);border:1px solid var(--ramka);border-radius:14px;overflow:hidden}
+th,td{padding:8px 11px;text-align:left;vertical-align:top;border-bottom:1px solid var(--ramka)}
+th{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--przygaszony);background:var(--kod)}
+tr:last-child td{border-bottom:0} td code{color:var(--akcent)}
+.scroll{overflow-x:auto}
+
+/* workflow lanes */
+.lanes{overflow-x:auto}
+.grid{display:grid;width:100%;min-width:760px;column-gap:4px;row-gap:6px;align-items:center;position:relative}
+.label{position:sticky;left:0;z-index:3;background:var(--panel);font:500 .68rem var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--przygaszony);align-self:stretch;display:flex;align-items:center}
+.plane{border:0;border-radius:12px 12px 0 0;padding:6px 12px;font:560 1rem var(--font-display);color:var(--mocny);cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.planebody{grid-row:2;align-self:stretch;border-radius:0 0 12px 12px}
+.pl-mapper{background:color-mix(in oklab,var(--szary) 16%,transparent)}
+.pl-swappable-dsl{background:color-mix(in oklab,var(--akcent) 13%,transparent)}
+.pl-parallel-model-router{background:color-mix(in oklab,var(--cyjan) 13%,transparent)}
+.track{grid-row:2 / 5;justify-self:center;width:2px;align-self:stretch;background:var(--ramka);margin-top:30px}
+.step{position:relative;z-index:1;grid-row:2;margin:8px 2px;padding:6px 3px 5px;border-radius:10px;border:1px solid var(--ramka);background:var(--tlo);color:var(--tekst);font:500 .72rem/1.2 var(--font-body);hyphens:manual;overflow-wrap:normal;cursor:pointer;display:grid;gap:3px;justify-items:center;text-align:center;min-width:0;transition:transform .12s,border-color .12s}
+.step:hover{border-color:var(--akcent);transform:translateY(-1px)}
+.step .nr{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font:600 .74rem/1 var(--font-display);background:var(--kod);color:var(--przygaszony)}
+.step.done .nr{background:var(--zielony);color:#fff}
+.step.current .nr{background:var(--akcent);color:#fff}
+.step .ic{font-size:.78rem;line-height:1;min-height:1em;display:flex;gap:3px}
+.step .ic .off{filter:grayscale(1);opacity:.45}
+.step .ic .light{position:relative}
+.step .ic .light.ok::after,.step .ic .light.bad::after{content:"";position:absolute;right:-3px;bottom:-2px;width:6px;height:6px;border-radius:50%;background:var(--zielony);border:1px solid var(--tlo)}
+.step .ic .light.bad::after{background:var(--czerwony)}
+.step .ic .light.off{filter:grayscale(1);opacity:.45}
+details.fold>summary{cursor:pointer;list-style:none;display:flex;flex-wrap:wrap;gap:12px;align-items:baseline}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary h2{display:inline;margin:0}
+details.fold>summary h2::after{content:" ▸";font-size:.8em;color:var(--przygaszony)}
+details.fold[open]>summary h2::after{content:" ▾"}
+details.fold .sum{font:.8rem var(--font-mono);color:var(--przygaszony)}
+details.fold[open]>summary{margin-bottom:10px}
+details.art-grupa{margin:6px 0;padding:8px 12px;border:1px solid var(--ramka);border-radius:12px}
+details.art-grupa>summary h3{display:inline;margin:0;font-size:.95rem}
+details.art-grupa>summary h3::after{content:" ▸";color:var(--przygaszony)}
+details.art-grupa[open]>summary h3::after{content:" ▾"}
+.step.todo{opacity:.62;cursor:default}
+.step.todo:hover{transform:none;border-color:var(--ramka)}
+.step.opt{border-style:dashed}
+.opt-note{border:1px dashed var(--ramka);border-radius:10px;padding:8px 12px;margin-top:10px;font-size:.88rem;color:var(--przygaszony)}
+.step.current{border:2px solid var(--akcent)}
+.step.current .nr{animation:puls 1.4s ease-in-out infinite}
+.step[aria-pressed=true]{outline:2px solid var(--mocny);outline-offset:2px}
+.step .tip{display:none}
+#tip{position:fixed;display:none;width:250px;z-index:1000;pointer-events:none;background:var(--mocny);color:var(--tlo);font:400 .8rem/1.4 var(--font-body);text-align:left;padding:9px 11px;border-radius:10px;box-shadow:var(--cien)}
+#tip.on{display:block}
+.cell{z-index:1;justify-self:center;text-align:center;font-size:.66rem;line-height:1.2;background:var(--panel);padding:1px 4px;border-radius:6px;min-width:0}
+.sq{color:var(--szary)} .sq.on{color:var(--akcent)} .cl{color:var(--akcent)} .cn{color:var(--zielony)} .muted{color:var(--szary)}
+.gh{font:.7rem var(--font-mono);margin-left:3px;text-decoration:none;color:var(--akcent,#0aa)}
+.commit{font:.74rem var(--font-mono);cursor:pointer;border:0;background:transparent;color:var(--tekst);padding:0}
+.collapsedcol{grid-row:1 / 5;align-self:stretch;border:0;border-radius:12px;cursor:pointer;color:var(--mocny);font:560 .8rem var(--font-display);padding:8px 4px;display:grid;align-content:center;justify-items:center;gap:4px;text-align:center}
+.collapsedcol small{font:500 .7rem var(--font-mono);color:var(--przygaszony)}
+.legend{margin-top:10px;display:flex;flex-wrap:wrap;gap:2px 16px;font-size:.76rem;color:var(--przygaszony)}
+
+/* selected step */
+.stepcard{border-left:4px solid var(--akcent);border-radius:0 16px 16px 0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px 24px;margin-top:10px}
+.cols>div{min-width:0} .cols ul{margin:4px 0 0;padding-left:18px} .cols li{margin-bottom:3px;font-size:.92rem}
+.files{font:.78rem/1.55 var(--font-mono);overflow-wrap:anywhere}
+
+.chgs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:14px 0 8px}
+.chg{border-radius:12px;padding:12px 14px;border:1px solid var(--ramka);min-width:0}
+.chg.zm{border:2px solid var(--akcent);background:color-mix(in oklab,var(--akcent) 9%,var(--panel))}
+.chg.dd{border:2px solid var(--zielony);background:color-mix(in oklab,var(--zielony) 9%,var(--panel))}
+.chgh{font:600 1.02rem var(--font-display);color:var(--mocny);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.chg.zm .chgh{color:var(--akcent)} .chg.dd .chgh{color:var(--zielony)}
+.cnt{font:600 .74rem var(--font-mono);padding:1px 8px;border-radius:999px;background:var(--tlo);border:1px solid currentColor}
+.frow{display:flex;gap:8px;align-items:baseline;font:.8rem/1.6 var(--font-mono);min-width:0}
+.frow .fpath{color:var(--przygaszony);font-size:.72rem;overflow-wrap:anywhere}
+.frow>span:last-child{min-width:0}
+.why{font:.8rem/1.4 var(--font-body);color:var(--tekst);margin:1px 0 4px}.why.brak{color:var(--czerwony)}
+.frow b{font-weight:600;white-space:nowrap}
+details.more summary{cursor:pointer;font:.76rem var(--font-mono);color:var(--przygaszony);margin-top:4px}
+ul.io{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:6px}
+ul.io li{font-size:.88rem;line-height:1.4} ul.sub{list-style:none;padding:0 0 0 14px;margin:4px 0 0;border-left:2px solid var(--ramka);display:grid;gap:3px} ul.io code{font-size:.78rem} .sek{font:600 .78rem var(--font-mono);color:var(--cyjan)} .po{color:var(--przygaszony)}
+/* places, artifacts, log */
+.places{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.place{background:var(--panel);border:1px solid var(--ramka);border-radius:14px;padding:14px 16px;box-shadow:var(--cien);display:grid;gap:6px;min-width:0}
+.place .id{font:600 .8rem var(--font-mono);color:var(--akcent)} .place .co{font-family:var(--font-display);font-size:1.05rem;color:var(--mocny);line-height:1.3}
+.place .wo{font:.78rem var(--font-mono);color:var(--przygaszony);overflow-wrap:anywhere}
+.place .we{font-size:.8rem;color:var(--przygaszony);line-height:1.45;overflow-wrap:anywhere;min-width:0} .place .we b.k{margin-right:6px} .place code{overflow-wrap:anywhere}
+.badge{display:inline-block;font:500 .7rem var(--font-mono);padding:1px 8px;border-radius:999px;border:1px solid currentColor}
+.ok{color:var(--zielony)} .bad{color:var(--czerwony)}
+.arts{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.art{display:flex;gap:10px;align-items:center;padding:10px 14px;border:1px solid var(--ramka);border-radius:12px;background:var(--panel);text-decoration:none;color:var(--tekst);min-width:0}
+.art:hover{border-color:var(--akcent)} .art .ico{font-size:1.2rem} .art .nm{font:500 .82rem var(--font-mono);overflow-wrap:anywhere} .art small{display:block;color:var(--przygaszony);font-size:.72rem}
+.gates{display:grid;gap:8px} .grow{display:flex;gap:10px;align-items:flex-start;font-size:.9rem} .gwho{flex:none;display:grid;justify-items:center;gap:2px;min-width:26px} .nick{font:500 .66rem var(--font-mono);color:var(--cyjan);white-space:nowrap} .gico{width:26px;height:26px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--kod);font-size:.85rem}
+.hist{display:grid;gap:8px} .hist>div{border-left:3px solid var(--akcent);padding:2px 12px;background:var(--panel);border-radius:0 10px 10px 0}
+.spec h1{display:none} .spec h2{margin:26px 0 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;font-size:1.3rem}
+.spec p,.spec ul{max-width:90ch} .spec pre{background:var(--panel);border:1px solid var(--ramka);padding:14px 16px;border-radius:12px;overflow-x:auto}
+.tag{font:500 .72rem var(--font-mono);padding:1px 9px;border-radius:999px;border:1px solid var(--ramka);color:var(--przygaszony)}
+.tag.pl-swappable-dsl{color:var(--akcent);background:none} .tag.pl-parallel-model-router{color:var(--cyjan);background:none}
+/* editable markdown window */
+.mdwin{background:var(--panel);border:1px solid var(--ramka);border-radius:16px;box-shadow:var(--cien);overflow:hidden}
+.mdbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--ramka);background:var(--kod)}
+.mdbar .nm{font:500 .8rem var(--font-mono);color:var(--mocny);margin-right:auto}
+.mdbar button{font:500 .76rem/1 var(--font-mono);padding:7px 12px;border-radius:999px;cursor:pointer;border:1px solid var(--ramka);background:var(--tlo);color:var(--przygaszony)}
+.mdbar button[aria-pressed=true]{background:var(--akcent);border-color:var(--akcent);color:#fff}
+.mdbar .stan{font:.74rem var(--font-mono);color:var(--akcent)}
+.mdwin textarea{display:block;width:100%;min-height:60vh;border:0;resize:vertical;padding:16px 18px;background:var(--panel);color:var(--tekst);font:.84rem/1.6 var(--font-mono);tab-size:2}
+.mdwin textarea:focus{outline:none}
+.mdwin .view{padding:6px 22px 18px;min-width:0}
+.mdwin .view pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.78rem}
+.mdwin .view.clamp{max-height:260px;overflow:hidden;position:relative}
+.mdwin .view.clamp::after{content:"";position:absolute;left:0;right:0;bottom:0;height:90px;background:linear-gradient(transparent,var(--panel))}
+.mdmore{display:block;margin:0 auto 12px;font:500 .78rem/1 var(--font-mono);padding:7px 14px;border-radius:999px;cursor:pointer;border:1px solid var(--ramka);background:var(--tlo);color:var(--przygaszony)}
+.mdmore:hover{color:var(--akcent);border-color:var(--akcent)}
+details.extra summary{cursor:pointer;color:var(--przygaszony);font-weight:600}
+button:focus-visible{outline:2px solid var(--akcent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.dot,.step.current .nr{animation:none}.step{transition:none}}
+</style>
+
+<header class="hero"><div class="wrap" lang="pl">
+  <p class="eyebrow" id="eyebrow">parallel-models</p>
+  <h1 id="title">Nowe rozwiązanie obok starego modelu</h1>
+  <div class="status" id="status"></div>
+</div></header>
+<main class="wrap" lang="pl">
+  <section id="miejsca"></section>
+  <section><h2>🗺️ Workflow</h2><div class="card lanes"><div class="grid" id="grid"></div></div></section>
+  <section id="krok"></section>
+  <section id="artefakty"></section>
+  <section id="spec" class="spec"></section>
+  <section id="bramki"></section>
+  <section id="dziennik"></section>
+  <section id="odstepstwa"></section>
+</main>
+
+<div id="tip" role="tooltip"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script id="dane" type="application/json">/*DANE*/</script>
+<script>
+const D = JSON.parse(document.getElementById('dane').textContent);
+const W = D.workflow;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const md = t => window.marked ? marked.parse(t) : `<pre>${esc(t)}</pre>`;
+const plane = k => W.plaszczyzny.find(p => p.id === k.plaszczyzna);
+const name = k => k.nr ? `${k.nr} ${k.slowo}` : k.slowo;
+const ghLink = c => D.repoUrl && c.full ? `<a class="gh" href="${esc(D.repoUrl)}/commit/${esc(c.full)}" target="_blank" rel="noopener" title="commit na GitHubie">↗</a>` : "";
+const label = k => k ? `${plane(k).nazwa} · ${k.nazwa}` : '—';
+const commitsOf = id => (D.commits || []).filter(c => c.krok === id);
+const gatesOf = (id, typ) => (D.bramki || []).filter(b => (!id || b.krok === id) && b.typ === typ);
+const dziennikOf = id => gatesOf(id, 'czlowiek');
+const testyOf = id => (D.bramki || []).filter(b => (!id || b.krok === id) && ['testy', 'porownanie', 'slownik', 'roznice'].includes(b.typ));
+const passed = t => t.ok ?? String(t.wynik).startsWith('✓');
+const current = D.stan?.krok;
+const status = k => k.id === 'mapper' || commitsOf(k.id).length ? 'done' : k.id === current ? 'current' : 'todo';
+const finished = W.kroki.every(k => status(k) === 'done');
+const stepById = id => W.kroki.find(k => k.id === id);
+// steps not started yet have nothing to show: they are not selectable
+const selectable = id => !!stepById(id) && status(stepById(id)) !== 'todo';
+let selected = selectable(location.hash.slice(1)) ? location.hash.slice(1) : (current || W.kroki[1].id);
+const collapsed = new Set(W.plaszczyzny.filter(p => p.id !== stepById(selected)?.plaszczyzna).map(p => p.id));
+
+function hero() {
+  const f = D.stan || {};
+  const h1 = (D.body || '').match(/^# (.+)$/m);
+  $('#eyebrow').textContent = `parallel-models${f.obszar ? ` · ${f.obszar}` : ''}`;
+  $('#title').textContent = h1 ? h1[1].replace(/^Specyfikacja:\s*/, '') : 'Nowe rozwiązanie obok starego modelu';
+  const i = W.kroki.findIndex(k => k.id === current);
+  if (finished) { $('#status').innerHTML = '<span class="now">✓ workflow zakończony</span>'; return; }
+  const cur = W.kroki[i];
+  const waits = cur?.bramka.czlowiek && !dziennikOf(cur.id).length ? ' · czeka na 👤' : '';
+  $('#status').innerHTML = `<span>← ${esc(label(W.kroki[i - 1]))}</span><span class="now"><span class="dot"></span>${esc(label(cur))}${waits}</span><span>${esc(label(W.kroki[i + 1]))} →</span>${D.demo ? `<span class="demo">${esc(D.demo)}</span>` : ''}`;
+}
+
+function places() {
+  // rows of the first table in miejsca.md
+  const rows = (D.miejsca || '').split('\n').filter(l => l.trim().startsWith('|') && !/^\|\s*-/.test(l.trim())).map(l => l.trim().slice(1, -1).split('|').map(c => c.trim()));
+  if (rows.length < 2) { $('#miejsca').innerHTML = `<h2>📍 Wybrane miejsca</h2><p class="muted">Jeszcze nie wybrane (krok „miejsca”).</p>`; return; }
+  const head = rows[0].map(h => h.toLowerCase());
+  const col = re => head.findIndex(h => re.test(h));
+  const [iId, iCo, iWo, iSt, iWe] = [col(/^#$/), col(/^co/), col(/wołający/), col(/status/), col(/wejście/)];
+  const inline = s => md(s).replace(/^<p>|<\/p>\n?$/g, '');
+  $('#miejsca').innerHTML = `<h2>📍 Wybrane miejsca</h2><div class="places">${rows.slice(1).map(r => {
+    const st = r[iSt] || '';
+    return `<div class="place"><span class="id">${esc(r[iId] || '')} ${st ? `<span class="badge ${st === 'nieudane' ? 'bad' : st === 'wpięte' ? 'ok' : ''}">${esc(st)}</span>` : ''}</span>
+      <span class="co">${inline(r[iCo] || '')}</span><span class="wo">${inline(r[iWo] || '')}</span>${iWe >= 0 && r[iWe] ? `<span class="we"><b class="k">wejście</b>${inline(r[iWe])}</span>` : ''}</div>`;
+  }).join('')}</div>`;
+}
+
+function lanes() {
+  const cols = [];
+  for (const p of W.plaszczyzny) {
+    if (collapsed.has(p.id)) cols.push({ collapsed: p });
+    else for (const k of W.kroki.filter(k => k.plaszczyzna === p.id)) cols.push({ step: k });
+  }
+  const g = $('#grid');
+  g.style.gridTemplateColumns = `92px ${cols.map(c => c.collapsed ? 'minmax(96px, .9fr)' : 'minmax(0, 1fr)').join(' ')}`;
+  let h = '';
+  [['', 1], ['workflow', 2], ['specyfikacja', 3], ['repo', 4]].forEach(([l, r]) => h += `<div class="label" style="grid-row:${r}">${l}</div>`);
+  let x = 2;
+  for (const p of W.plaszczyzny) {
+    const n = collapsed.has(p.id) ? 1 : W.kroki.filter(k => k.plaszczyzna === p.id).length;
+    if (!collapsed.has(p.id)) h += `<button class="plane pl-${p.id}" style="grid-row:1;grid-column:${x} / span ${n}" data-plane="${p.id}" title="${esc(p.podpis)} — kliknij, żeby zwinąć">${esc(p.nazwa)}</button><div class="planebody pl-${p.id}" style="grid-column:${x} / span ${n}"></div>`;
+    x += n;
+  }
+  cols.forEach((c, i) => {
+    const col = i + 2;
+    if (c.collapsed) {
+      const ks = W.kroki.filter(k => k.plaszczyzna === c.collapsed.id), done = ks.filter(k => status(k) === 'done').length;
+      h += `<button class="collapsedcol pl-${c.collapsed.id}" style="grid-column:${col}" data-plane="${c.collapsed.id}" title="${esc(c.collapsed.podpis)}">${esc(c.collapsed.nazwa)}<small>${done === ks.length ? '✓ zrobione' : done ? `${done}/${ks.length} ✓` : `${ks.length} ${ks.length === 1 ? 'krok' : 'kroków'}`}</small><small>▸</small></button>`;
+      return;
+    }
+    const k = c.step, st = status(k), cm = commitsOf(k.id), dz = dziennikOf(k.id), ts = testyOf(k.id), lastT = ts[ts.length - 1];
+    const auto = k.bramka.testy || k.bramka.zrzuty;
+    const icons = `${auto ? `<span class="light ${lastT ? (passed(lastT) ? 'ok' : 'bad') : 'off'}" title="bramka: ${esc([k.bramka.testy, k.bramka.zrzuty].filter(Boolean).join(' · '))}">🚦</span>` : ''}${k.bramka.czlowiek ? `<span class="${dz.length ? '' : 'off'}" title="człowiek: ${esc(k.bramka.czlowiek)}${dz.length ? ` — ${esc(dz[dz.length - 1].decyzja)}${dz[dz.length - 1].kto ? ` (${esc(dz[dz.length - 1].kto)})` : ''}` : ''}">👤</span>` : ''}`;
+    h += `<div class="track" style="grid-column:${col}"></div>
+      <button class="step ${st}${k.opcja ? ' opt' : ''}" style="grid-column:${col}" data-step="${k.id}" aria-pressed="${selected === k.id}"${st === 'todo' ? ' aria-disabled="true" tabindex="-1"' : ''}><span class="nr">${esc(k.nr || '·')}</span><span>${esc(k.slowo)}</span><span class="ic">${icons}</span><span class="tip" role="tooltip"><b>${esc(k.nazwa)}</b>${k.opcja ? ' · <i>wariant zależny od aplikacji</i>' : ''}<br>${esc(k.po_co)}${st === 'todo' ? '<br><i>jeszcze nie wykonany</i>' : ''}</span></button>
+      <div class="cell" style="grid-row:3;grid-column:${col}" title="${esc(k.specyfikacja)}"><span class="sq ${st !== 'todo' ? 'on' : ''}">■</span> ${esc(k.spec_krotko)}</div>`;
+    const leg = cm.flatMap(x => x.legacy).length, dod = cm.flatMap(x => x.dodane).length;
+    h += `<div class="cell" style="grid-row:4;grid-column:${col}">${k.id === 'mapper' ? '<span class="muted">—</span>' : cm.length
+      ? `<button class="commit" data-step="${k.id}">● ${esc(cm[cm.length - 1].hash)}</button>${ghLink(cm[cm.length - 1])}<br>${leg ? `<span class="cl">◆${leg}</span> ` : ''}${dod ? `<span class="cn">+${dod}</span>` : ''}` : '<span class="muted">○</span>'}</div>`;
+  });
+  g.innerHTML = h;
+}
+
+const list = (t, a) => a?.length ? `<div><div class="k">${t}</div><ul>${a.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>` : '';
+const files = (sym, cls, a) => a.map(f => `<div><span class="${cls}">${sym}</span> ${esc(f)}</div>`).join('');
+
+const odstepstwa = (() => {
+  const m = (D.body || '').match(/\n## Odstępstwa[^\n]*\n([\s\S]*?)(?=\n## |$)/);
+  if (!m) return [];
+  return m[1].split('\n').filter(l => l.trim().startsWith('|') && !/^\|\s*-/.test(l.trim())).slice(1).map(l => l.trim().slice(1, -1).split('|').map(c => c.trim().replace(/`/g, '')));
+})();
+const reasonFor = (krok, file) => odstepstwa.filter(r => r[0] === krok && r[1].split(/,\s*/).some(p => p && (file.endsWith(p) || file.split('/').pop() === p.split('/').pop()))).map(r => `${r[3]}: ${r[2]}`);
+function stepCard() {
+  const k = stepById(selected);
+  const cm = commitsOf(k.id), dz = dziennikOf(k.id), ts = testyOf(k.id);
+  const ob = D.stan?.obszar;
+  const sub = t => ob ? String(t).replace(/<obszar>/g, ob) : String(t);
+  // what this step changed: its commits, plus the working tree while it is the current step
+  const pend = k.id === current && D.pending ? D.pending : { legacy: [], dodane: [], nasze: [] };
+  const zm = [...new Set([...cm.flatMap(c => c.legacy), ...pend.legacy])];
+  const nasze = [...new Set([...cm.flatMap(c => c.nasze || []), ...(pend.nasze || [])])];
+  const dod = [...new Set([...cm.flatMap(c => c.dodane), ...pend.dodane])];
+  const top = (arr, sym, cls) => {
+    const row = f => { const dir = f.split("/").slice(0, -1).join("/"); const why = cls === "cl" ? reasonFor(k.id, f) : []; return `<div class="frow"><span class="${cls}">${sym}</span><span><b>${esc(f.split("/").pop())}</b>${dir ? ` <span class="fpath">${esc(dir)}</span>` : ""}${cls === "cl" ? (why.length ? why.map(w => `<div class="why">${esc(w)}</div>`).join("") : '<div class="why brak">brak wpisu w odstępstwach</div>') : ""}</span></div>`; };
+    return arr.slice(0, 5).map(row).join("") + (arr.length > 5 ? `<details class="more"><summary>pokaż wszystkie (${arr.length})</summary>${arr.slice(5).map(row).join("")}</details>` : "");
+  };
+  const box = (title, cls, arr, sym, planned) => `<div class="chg ${cls}"><div class="chgh">${title} <span class="cnt">${arr.length || (planned ? "plan" : 0)}</span></div>${arr.length ? top(arr, sym, cls === "zm" ? "cl" : "cn") : planned ? `<div class="muted">planowane: ${esc(planned)}</div>` : '<div class="muted">nic</div>'}</div>`;
+  const io = (t, arr) => {
+    if (!arr?.length) return "";
+    // one entry per file; sections of the same file grouped under it
+    const groups = [];
+    for (const x of arr) {
+      if (typeof x === "string") { groups.push({ plik: x, items: [] }); continue; }
+      const p = sub(x.plik);
+      let g = groups.find(g => g.plik === p);
+      if (!g) groups.push(g = { plik: p, items: [] });
+      g.items.push(x);
+    }
+    const sek = x => x.sekcja ? `<span class="sek">§ ${esc(x.sekcja.replace(/^#+\s*/, ""))}</span>` : "";
+    return `<div><div class="k">${t}</div><ul class="io">${groups.map(g => g.items.length === 1 && !g.items[0].sekcja
+      ? `<li><code>${esc(g.plik)}</code><span class="po"> — ${esc(g.items[0].po_co)}</span></li>`
+      : `<li><code>${esc(g.plik)}</code><ul class="sub">${g.items.map(x => `<li>${sek(x) || "całość"}<span class="po"> — ${esc(x.po_co)}</span></li>`).join("")}</ul></li>`).join("")}</ul></div>`;
+  };
+  const gate = [k.bramka.czlowiek && `👤 ${k.bramka.czlowiek}`, k.bramka.testy && `✓ ${k.bramka.testy}`, k.bramka.zrzuty && `📷 ${k.bramka.zrzuty}`].filter(Boolean);
+  const hashes = cm.map(c => `● ${D.repoUrl ? `<a href="${esc(D.repoUrl)}/commit/${esc(c.full)}" target="_blank" rel="noopener">${esc(c.hash)}</a>` : esc(c.hash)} · ${esc(c.date)}`).join(" · ") + (pend.legacy.length || pend.dodane.length ? " · niezacommitowane" : "");
+  $("#krok").innerHTML = `<h2>${status(k) === "current" ? "▶ " : ""}${esc(k.nr ? `${k.nr}. ${k.nazwa}` : k.nazwa)} <span class="tag pl-${k.plaszczyzna}" style="vertical-align:middle">${esc(plane(k).nazwa)}</span></h2>
+    <div class="card stepcard"><p style="margin:0">${esc(k.po_co)}</p>${k.opcja ? `<div class="opt-note">⚙️ zależnie od aplikacji: ${esc(k.opcja)}</div>` : ""}
+      <div class="chgs">${box("◆ Zmienione w legacy", "zm", zm, "◆", k.kod.legacy)}${box("+ Dodane w legacy", "dd", dod, "+", k.kod.nowy)}</div>
+      ${nasze.length ? `<div class="k">zmienione nasze (z wcześniejszych kroków): ${nasze.map(f => esc(f.split("/").pop())).join(", ")}</div>` : ""}
+      ${hashes ? `<div class="k" style="text-transform:none;letter-spacing:0">${hashes}</div>` : ""}
+      <div class="cols">${io("wejście", k.wejscie)}${io("wyjście", k.wyjscie)}</div>
+      <div class="cols"><div><div class="k">🚦 bramki</div>${gate.length ? gate.map(g => `<div>${esc(g)}</div>`).join("") : '<span class="muted">bez bramki</span>'}${gateEntries(k.id).length ? `<div class="gates" style="margin-top:8px">${gateEntries(k.id).map(e => gateRow(e, false)).join("")}</div>` : ""}</div>
+        ${list("może", k.moze)}${list("nie może", k.nie_moze)}${list("stop", k.stop)}</div></div>`;
+}
+
+function artifacts() {
+  // On top only the start (source, specification, places, state, gate log) and the end (what the last step left for a human:
+  // story, reconciliation, logs); everything else folded, one group per step (step = theme).
+  const a = D.artefakty || [];
+  const ico = f => /\.(webm|mp4)$/.test(f) ? '🎬' : /\.(png|jpe?g)$/.test(f) ? '📷' : /\.html$/.test(f) ? '🖥️' : /\.jsonl?$/.test(f) ? '🧾' : /\.m?js$/.test(f) ? '⚙️' : '📄';
+  const stepOf = x => x.krok ? label(stepById(x.krok)) : 'niezacommitowane';
+  const card = x => `<a class="art" href="${esc(x.plik)}" data-plik="${esc(x.plik)}"><span class="ico">${ico(x.plik)}</span><span><span class="nm">${esc(x.plik)}</span><small>${esc(stepOf(x))}</small></span></a>`;
+  const shotGroup = ([d, xs]) => `<a class="art" href="${esc(xs[0].plik)}" data-plik="${esc(xs[0].plik)}" data-grupa="${esc(d)}"><span class="ico">📷</span><span><span class="nm">${esc(d)}/</span><small>${xs.length} zrzutów · ${esc(stepOf(xs[0]))}</small></span></a>`;
+  const tiles = xs => {
+    const shots = xs.filter(x => /\.png$/.test(x.plik)), rest = xs.filter(x => !/\.png$/.test(x.plik));
+    rest.sort((p, q) => (/story\.html$/.test(q.plik) - /story\.html$/.test(p.plik)) || p.plik.localeCompare(q.plik));
+    const groups = Object.entries(shots.reduce((m, x) => { const d = x.plik.split('/').slice(0, -1).join('/'); (m[d] ||= []).push(x); return m; }, {}));
+    return `<div class="arts">${rest.map(card).join('')}${groups.map(shotGroup).join('')}</div>`;
+  };
+  const START = ['zrodlo.md', 'specyfikacja.md', 'miejsca.md', 'stan.json', 'bramki.jsonl'];
+  const order = (D.workflow?.kroki || []).map(k => k.id);
+  const last = a.filter(x => x.plik.includes('/') && x.krok).map(x => x.krok).sort((p, q) => order.indexOf(q) - order.indexOf(p))[0];
+  const isEnd = x => (x.krok === last && (/story\.html$/.test(x.plik) || /\/rekonsyliacja\/[^/]+\.jsonl$/.test(x.plik) || /\/log-[^/]+\.txt$/.test(x.plik)));
+  const start = START.map(f => a.find(x => x.plik === f)).filter(Boolean), end = a.filter(isEnd);
+  const reszta = a.filter(x => !start.includes(x) && !end.includes(x));
+  const byStep = Object.entries(reszta.reduce((m, x) => { (m[x.krok || ''] ||= []).push(x); return m; }, {}))
+    .sort(([p], [q]) => (order.indexOf(p) + 1 || 99) - (order.indexOf(q) + 1 || 99));
+  const fold = ([k, xs]) => `<details class="fold art-grupa"><summary><h3>${esc(k ? label(stepById(k)) : 'niezacommitowane')}</h3><span class="sum">${xs.length} ${xs.length === 1 ? 'plik' : [2, 3, 4].includes(xs.length % 10) && ![12, 13, 14].includes(xs.length % 100) ? 'pliki' : 'plików'}</span></summary>${tiles(xs)}</details>`;
+  $('#artefakty').innerHTML = `<h2>📦 Artefakty</h2>${a.length ? `
+    <div class="k">początek</div>${tiles(start)}
+    ${end.length ? `<div class="k" style="margin-top:14px">koniec${last ? ` · ${esc(label(stepById(last)))}` : ''}</div>${tiles(end)}` : ''}
+    ${byStep.length ? `<div class="k" style="margin-top:14px">po krokach</div>${byStep.map(fold).join('')}` : ''}` : '<p class="muted">Jeszcze nic.</p>'}`;
+}
+
+let dirty = false, plik = 'specyfikacja.md';
+const tekstowe = () => Object.fromEntries([['specyfikacja.md', D.raw || D.body || ''], ...(D.artefakty || []).filter(a => a.tresc !== undefined && a.plik !== 'specyfikacja.md').map(a => [a.plik, a.tresc])]);
+const pliki = tekstowe();
+function specBody(text) {
+  const cut = ['Odstępstwa', 'Testy', 'Dziennik człowieka'];
+  let body = text.replace(/^---\n[\s\S]*?\n---\n/, '');
+  for (const c of cut) body = body.replace(new RegExp(`\\n## ${c}[^\\n]*\\n[\\s\\S]*?(?=\\n## |$)`), '\n');
+  return body.replace(/<!-- krok: ([\w.-]+) -->\n## (.+)/g, (m, id, t) => { const k = stepById(id); return `## ${t} <span class="tag pl-${k?.plaszczyzna ?? ''}" title="${esc(k ? plane(k).nazwa : '')}">${esc(k ? `krok ${name(k)}` : id)}</span>`; });
+}
+function preview(name, text) {
+  if (name === 'specyfikacja.md') return md(specBody(text)) + (D.zrodlo && !pliki['zrodlo.md'] ? `<details class="extra"><summary>Źródło rozwiązania (zrodlo.md, bez zmian)</summary>${md(D.zrodlo)}</details>` : '');
+  if (/\.md$/.test(name)) return md(text);
+  return `<pre>${esc(text)}</pre>`;
+}
+function spec() {
+  $('#spec').innerHTML = `<h2 style="display:block">📝 Specyfikacja i pliki</h2><div class="mdwin">
+    <div class="mdbar"><span class="nm" id="mdnazwa"></span><span class="stan" id="mdstan"></span>
+      <button type="button" data-md="podglad" aria-pressed="true">podgląd</button><button type="button" data-md="edycja" aria-pressed="false">edycja</button>
+      <button type="button" data-md="zapisz">zapisz…</button><button type="button" data-md="kopiuj">kopiuj</button><a class="tag" id="mdotworz" target="_blank" rel="noopener">otwórz ↗</a></div>
+    <div class="view clamp" id="mdview"></div><button type="button" class="mdmore" id="mdmore" data-more>więcej ▾</button>
+    <textarea id="mdtext" spellcheck="false" hidden aria-label="treść pliku"></textarea></div>
+    <p class="k" style="text-transform:none;letter-spacing:0" id="mdhint"></p>`;
+  $('#mdtext').addEventListener('input', () => { dirty = true; pliki[plik] = $('#mdtext').value; $('#mdstan').textContent = 'niezapisane — odświeżanie wstrzymane'; });
+  openFile('specyfikacja.md');
+}
+function openFile(name, grupa) {
+  plik = name;
+  const text = pliki[name];
+  const editable = text !== undefined;
+  $('#mdnazwa').textContent = grupa ? `${grupa}/` : name;
+  $('#mdstan').textContent = '';
+  document.querySelectorAll('[data-md]').forEach(b => { b.hidden = !editable; });
+  $('#mdotworz').href = name; $('#mdotworz').hidden = editable && /\.md$/.test(name);
+  $('#mdtext').hidden = true; $('#mdview').hidden = false;
+  $('#mdview').classList.add('clamp'); $('#mdmore').hidden = false; $('#mdmore').textContent = 'więcej ▾';
+  document.querySelectorAll('[data-md=podglad],[data-md=edycja]').forEach(b => b.setAttribute('aria-pressed', b.dataset.md === 'podglad'));
+  if (editable) { $('#mdtext').value = text; $('#mdview').innerHTML = preview(name, text); }
+  else if (grupa) $('#mdview').innerHTML = `<div class="arts">${(D.artefakty || []).filter(a => a.plik.startsWith(grupa + '/') && /\.png$/.test(a.plik)).map(a => `<a href="${esc(a.plik)}" target="_blank" rel="noopener"><img src="${esc(a.plik)}" alt="${esc(a.plik)}" loading="lazy"></a>`).join('')}</div>`;
+  else if (/\.(webm|mp4)$/.test(name)) $('#mdview').innerHTML = `<video src="${esc(name)}" controls style="width:100%;border-radius:10px"></video>`;
+  else if (/\.(png|jpe?g)$/.test(name)) $('#mdview').innerHTML = `<img src="${esc(name)}" alt="${esc(name)}">`;
+  else $('#mdview').innerHTML = `<p>Otwórz plik w nowej karcie: <a href="${esc(name)}" target="_blank" rel="noopener">${esc(name)}</a></p>`;
+  $('#mdhint').innerHTML = editable ? `Zmiany zapisujesz do <code>specyfikacje/${esc(D.stan?.obszar ?? '<obszar>')}/${esc(name)}</code> (zapisz… → wskaż ten plik). Claude bierze je w następnym kroku; commit idzie razem z krokiem.` : '';
+}
+
+function gateEntries(id) {
+  const t = testyOf(id).map(x => ({ data: x.data, krok: x.krok, ico: passed(x) ? "✓" : "✗", cls: passed(x) ? "ok" : "bad", tekst: `${({ porownanie: "porównanie ", slownik: "słownik zakazany ", roznice: "różnice " })[x.typ] ?? ""}${x.co}: ${x.wynik}` }));
+  const h = gatesOf(id, "czlowiek").map(x => ({ data: x.data, krok: x.krok, ico: "👤", kto: x.kto, cls: "", tekst: `${x.decyzja}${x.uwagi ? " — " + x.uwagi : ""}` }));
+  return [...t, ...h].sort((p, q) => p.data < q.data ? -1 : 1);
+}
+const gateRow = (e, withStep) => `<div class="grow"><span class="gwho"><span class="gico ${e.cls}">${e.ico}</span>${e.kto ? `<span class="nick">${esc(e.kto)}</span>` : ""}</span><span>${withStep ? `<span class="k" style="text-transform:none;letter-spacing:0">${esc(e.data)} · ${esc(label(stepById(e.krok)))}</span><br>` : ""}<span class="${e.cls}">${esc(e.tekst)}</span></span></div>`;
+function bottom() {
+  const all = gateEntries();
+  const nt = all.filter(e => e.ico === "✓").length, nb = all.filter(e => e.ico === "✗").length, nh = all.filter(e => e.ico === "👤").length;
+  const last = all[all.length - 1];
+  $("#bramki").innerHTML = `<details class="fold"><summary><h2>🚦 Bramki</h2><span class="sum">${all.length ? `<span class="ok">✓ ${nt}</span>${nb ? ` <span class="bad">✗ ${nb}</span>` : ""} · 👤 ${nh}${last ? ` · ostatnia: ${esc(last.data)} ${esc(label(stepById(last.krok)))}` : ""}` : "jeszcze nic"}</span></summary><p class="k" style="text-transform:none;letter-spacing:0">✓ ✗ testy, porównania odpowiedzi i katalog różnic (seed / poza seedem) uruchomione skryptem · 👤 decyzja człowieka · źródło: <code>bramki.jsonl</code></p>${all.length ? `<div class="card gates">${all.map(e => gateRow(e, true)).join("")}</div>` : ""}</details>`;
+  $("#dziennik").innerHTML = "";
+  $("#odstepstwa").innerHTML = "";
+}
+
+function confirmLeave() { return true; } // edits stay in memory per file; reload waits while anything is unsaved
+async function mdAction(a) {
+  const ta = $('#mdtext');
+  const name = plik.split('/').pop();
+  if (a === 'podglad' || a === 'edycja') {
+    const ed = a === 'edycja';
+    ta.hidden = !ed; $('#mdview').hidden = ed; $('#mdmore').hidden = ed;
+    document.querySelectorAll('[data-md=podglad],[data-md=edycja]').forEach(b => b.setAttribute('aria-pressed', b.dataset.md === a));
+    if (!ed) $('#mdview').innerHTML = preview(plik, ta.value);
+    if (ed) ta.focus();
+  } else if (a === 'kopiuj') {
+    try { await navigator.clipboard.writeText(ta.value); $('#mdstan').textContent = 'skopiowane'; } catch { ta.hidden = false; ta.select(); }
+  } else if (a === 'zapisz') {
+    try {
+      if (window.showSaveFilePicker) {
+        const h = await showSaveFilePicker({ suggestedName: name });
+        const w = await h.createWritable(); await w.write(ta.value); await w.close();
+      } else {
+        const a2 = document.createElement('a'); a2.href = URL.createObjectURL(new Blob([ta.value], { type: 'text/markdown' })); a2.download = name; a2.click();
+      }
+      dirty = false; $('#mdstan').textContent = 'zapisane';
+    } catch { $('#mdstan').textContent = 'nie zapisano — skopiuj i wklej do pliku'; }
+  }
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-more]')) { const v = $('#mdview'), c = v.classList.toggle('clamp'); $('#mdmore').textContent = c ? 'więcej ▾' : 'mniej ▴'; return; }
+  const m = e.target.closest('[data-md]');
+  if (m) { mdAction(m.dataset.md); return; }
+  const l = e.target.closest('#mdview a[href]');
+  if (l && pliki[l.getAttribute('href')] !== undefined) { e.preventDefault(); openFile(l.getAttribute('href')); return; }
+  const f = e.target.closest('[data-plik]');
+  if (f) { e.preventDefault(); if (dirty && !confirmLeave()) return; openFile(f.dataset.plik, f.dataset.grupa); $('#spec').scrollIntoView({ block: 'start', behavior: 'smooth' }); return; }
+  const t = e.target.closest('[data-plane],[data-step]');
+  if (!t) return;
+  if (t.dataset.plane) { collapsed.has(t.dataset.plane) ? collapsed.delete(t.dataset.plane) : collapsed.add(t.dataset.plane); lanes(); return; }
+  if (!selectable(t.dataset.step)) return;
+  selected = t.dataset.step;
+  history.replaceState(null, '', `#${selected}`);
+  lanes(); stepCard();
+  $('#krok').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+});
+
+// one floating popup above everything (the lanes card scrolls sideways and would clip it)
+function showTip(el) {
+  const t = $("#tip"), src = el.querySelector(".tip");
+  if (!src) return;
+  t.innerHTML = src.innerHTML; t.classList.add("on");
+  const r = el.getBoundingClientRect(), w = t.offsetWidth, h = t.offsetHeight;
+  let x = r.left + r.width / 2 - w / 2, y = r.bottom + 8;
+  x = Math.max(8, Math.min(x, innerWidth - w - 8));
+  if (y + h > innerHeight - 8) y = r.top - h - 8;
+  t.style.left = x + "px"; t.style.top = y + "px";
+}
+const hideTip = () => $("#tip").classList.remove("on");
+document.addEventListener("mouseover", e => { const s = e.target.closest(".step"); s ? showTip(s) : hideTip(); });
+document.addEventListener("focusin", e => { const s = e.target.closest(".step"); s ? showTip(s) : hideTip(); });
+addEventListener("scroll", hideTip, true);
+
+hero(); places(); lanes(); stepCard(); artifacts(); spec(); bottom();
+// live: each gate rebuilds this file; while the workflow runs, reload every 30 s (selected step stays in the hash)
+if (!finished && !D.demo && location.protocol === 'file:') setInterval(() => { if (!dirty) location.reload(); }, 30000);
+</script>
