@@ -1,0 +1,227 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Migracja danych</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Same look as the training pages. Order: numbers, funnel, decisions, problems, transfer report, rounds, files. Read-only: the tool decides, the human reads. */
+:root{--tlo:#f4efe6;--tlo-2:#ece4d6;--tekst:#201a16;--mocny:#2b2420;--przygaszony:#6b5f54;--akcent:#b5632b;
+  --cyjan:#1f7a73;--ramka:#d8cdbb;--panel:#fbf8f2;--kod:#efe7da;--link:#b5632b;--zielony:#3c7a3a;--czerwony:#b0392e;--szary:#a99d8e;--zolty:#a87a14;
+  --font-display:"Fraunces",Georgia,serif;--font-body:"IBM Plex Sans","Segoe UI",sans-serif;--font-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --cien:0 1px 2px rgba(60,40,20,.05),0 10px 30px -12px rgba(60,40,20,.18)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--tlo:#15110e;--tlo-2:#1d1712;--tekst:#f1e9dd;--mocny:#fbf5ea;--przygaszony:#ab9d8c;
+  --akcent:#e08a4c;--cyjan:#5bc3b9;--ramka:#352b22;--panel:#1f1812;--kod:#241c15;--link:#f0a568;--zielony:#7fc27a;--czerwony:#ef7d72;--szary:#6f6457;--zolty:#e0b54f;
+  --cien:0 1px 2px rgba(0,0,0,.3),0 10px 30px -12px rgba(0,0,0,.6);color-scheme:dark}}
+:root[data-theme=dark]{--tlo:#15110e;--tlo-2:#1d1712;--tekst:#f1e9dd;--mocny:#fbf5ea;--przygaszony:#ab9d8c;
+  --akcent:#e08a4c;--cyjan:#5bc3b9;--ramka:#352b22;--panel:#1f1812;--kod:#241c15;--link:#f0a568;--zielony:#7fc27a;--czerwony:#ef7d72;--szary:#6f6457;--zolty:#e0b54f;
+  --cien:0 1px 2px rgba(0,0,0,.3),0 10px 30px -12px rgba(0,0,0,.6);color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--tlo)}
+body{margin:0;min-height:100vh;background:var(--tlo);color:var(--tekst);font:16px/1.6 var(--font-body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:16px}
+.hero{position:relative;overflow:hidden;padding-block:clamp(26px,4vw,44px) clamp(20px,3vw,30px);border-bottom:1px solid var(--ramka);
+  background:radial-gradient(120% 80% at 85% -10%,color-mix(in oklab,var(--akcent) 22%,transparent),transparent 60%),
+    radial-gradient(90% 70% at -10% 110%,color-mix(in oklab,var(--cyjan) 20%,transparent),transparent 55%),linear-gradient(160deg,var(--tlo),var(--tlo-2))}
+.hero h1{font-size:clamp(1.7rem,4vw,2.6rem);margin:0}
+.eyebrow{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--akcent);margin:0 0 10px}
+.status{margin-top:12px;font:.86rem var(--font-mono);color:var(--przygaszony)}
+main{padding-block:26px 96px;display:grid;grid-template-columns:minmax(0,1fr);gap:32px}
+main>*{min-width:0}
+h1,h2,h3{font-family:var(--font-display);font-weight:560;line-height:1.15;letter-spacing:-.01em;margin:0}
+h2{font-size:clamp(1.3rem,2.6vw,1.7rem);margin-bottom:12px} h3{font-size:1.08rem}
+a{color:var(--link)}
+code,pre{font-family:var(--font-mono);font-size:.84em}
+code{background:var(--kod);padding:1px 6px;border-radius:5px}
+pre{background:var(--kod);padding:10px 12px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0}
+.card{background:var(--panel);border:1px solid var(--ramka);border-radius:16px;padding:16px 20px;box-shadow:var(--cien);min-width:0}
+.k{font:500 .7rem var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--przygaszony)}
+.muted{color:var(--szary)} .ok{color:var(--zielony)} .bad{color:var(--czerwony)} .warn{color:var(--zolty)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.tile{background:var(--panel);border:1px solid var(--ramka);border-radius:14px;padding:14px 16px;box-shadow:var(--cien)}
+.tile .big{font:600 1.9rem/1.1 var(--font-display);color:var(--mocny)}
+.tile .sub{font:.78rem/1.5 var(--font-mono);color:var(--przygaszony);margin-top:4px}
+/* funnel */
+.lejek{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.etap{border:1px solid var(--ramka);border-radius:10px;background:var(--tlo);padding:6px 10px;font-size:.82rem}
+.etap.done{border-color:var(--zielony)} .etap .nr{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--kod);font:600 .72rem var(--font-display);margin-right:4px}
+.etap.done .nr{background:var(--zielony);color:#fff}
+.etap .co{display:block;font:.72rem var(--font-mono);color:var(--przygaszony)}
+.lejek .arr{color:var(--akcent)}
+/* decisions */
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{font:500 .76rem var(--font-mono);padding:5px 11px;border-radius:999px;border:1px solid var(--ramka);background:var(--panel);color:var(--przygaszony);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--akcent);border-color:var(--akcent);color:#fff}
+.decs{display:grid;gap:12px}
+.dec{background:var(--panel);border:1px solid var(--ramka);border-radius:14px;padding:14px 16px;box-shadow:var(--cien);display:grid;gap:8px;min-width:0}
+.dec.s-przyjeta{border-left:5px solid var(--zielony)} .dec.s-odrzucona,.dec.s-zastapiona{border-left:5px solid var(--szary);opacity:.85}
+.dhead{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.did{font:600 .85rem var(--font-mono);color:var(--akcent)}
+.dob{font:560 1.05rem var(--font-display);color:var(--mocny)}
+.badge{display:inline-block;font:500 .7rem var(--font-mono);padding:1px 8px;border-radius:999px;border:1px solid currentColor}
+.st-hipoteza{color:var(--zolty)} .st-przyjeta{color:var(--zielony)} .st-odrzucona{color:var(--czerwony)} .st-zastapiona{color:var(--szary)}
+.conf{display:inline-flex;align-items:center;gap:6px;font:.74rem var(--font-mono);color:var(--przygaszony)}
+.conf i{display:inline-block;width:70px;height:6px;border-radius:3px;background:var(--kod);overflow:hidden;position:relative}
+.conf i b{position:absolute;left:0;top:0;bottom:0;background:var(--akcent)}
+.map{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;font-size:.9rem}
+.map>div{background:var(--kod);border-radius:10px;padding:6px 10px;min-width:0;overflow-wrap:anywhere}
+.map .arr{color:var(--akcent);font-weight:600}
+@media (max-width:640px){.map{grid-template-columns:1fr}.map .arr{transform:rotate(90deg);justify-self:center}}
+.ddec{font-weight:500}
+.why{color:var(--przygaszony);font-size:.9rem}
+.src{font:.76rem var(--font-mono);color:var(--przygaszony);overflow-wrap:anywhere}
+details>summary{cursor:pointer;font:.78rem var(--font-mono);color:var(--przygaszony)}
+.q{border-top:1px dashed var(--ramka);padding-top:6px;margin-top:6px}
+/* problems */
+.probs{display:grid;gap:10px}
+.prob{background:var(--panel);border:1px solid var(--ramka);border-radius:12px;padding:12px 14px;display:grid;gap:4px}
+.prob.open{border-left:5px solid var(--czerwony)} .prob.done{border-left:5px solid var(--zielony)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;background:var(--panel);border:1px solid var(--ramka);border-radius:12px;overflow:hidden}
+th,td{padding:7px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--ramka)}
+th{font:500 .68rem var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--przygaszony);background:var(--kod)}
+.scroll{overflow-x:auto}
+.files{display:flex;flex-wrap:wrap;gap:8px}
+.files button{font:.78rem var(--font-mono);padding:6px 10px;border-radius:10px;border:1px solid var(--ramka);background:var(--panel);color:var(--tekst);cursor:pointer}
+.viewer{margin-top:10px}
+.md h1,.md h2,.md h3{margin:16px 0 8px} .md table{margin:8px 0}
+</style>
+
+<header class="hero"><div class="wrap" lang="pl">
+  <p class="eyebrow" id="eyebrow">migracja danych</p>
+  <h1 id="title">Dane starego modelu w nowym</h1>
+  <div class="status" id="status"></div>
+</div></header>
+<main class="wrap" lang="pl">
+  <section id="liczby"></section>
+  <section><h2>🔻 Lejek</h2><div class="card"><div class="lejek" id="lejek"></div></div></section>
+  <section id="decyzje"></section>
+  <section id="problemy"></section>
+  <section id="raport"></section>
+  <section id="rundy"></section>
+  <section id="pliki"></section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script id="dane" type="application/json">/*DANE*/</script>
+<script>
+const D = JSON.parse(document.getElementById('dane').textContent);
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const md = t => window.marked ? marked.parse(String(t ?? '')) : `<pre>${esc(t)}</pre>`;
+const inline = t => md(t).replace(/^<p>|<\/p>\n?$/g, '');
+const stCls = s => ({ 'hipoteza': 'st-hipoteza', 'przyjęta': 'st-przyjeta', 'odrzucona': 'st-odrzucona', 'zastąpiona': 'st-zastapiona' })[s] || '';
+const sekcja = h => { const m = (D.md || '').match(new RegExp(`^## ${h}\\s*\\n([\\s\\S]*?)(?=^## |$(?![\\s\\S]))`, 'm')); return m ? m[1].trim() : ''; };
+const rundy = (D.liczby || []).filter(l => l.typ === 'roznice');
+const przed = rundy.find(l => l.runda === 'przed'), po = rundy.filter(l => l.runda !== 'przed').at(-1);
+const kontrola = (D.liczby || []).filter(l => l.typ === 'kontrola').at(-1);
+const dec = D.decyzje || [], pr = D.problemy || [];
+
+function hero() {
+  const h1 = (D.md || '').match(/^# (.+)$/m);
+  if (h1) $('#title').textContent = h1[1];
+  $('#eyebrow').textContent = `migracja danych · ${D.obszar}`;
+  const filtr = (D.md || '').match(/^Filtr:\s*(.+)$/m);
+  $('#status').textContent = `${filtr ? `filtr: ${filtr[1]} · ` : ''}widok z ${D.built} UTC`;
+}
+
+const runda = l => {
+  if (!l) return null;
+  const z = l.liczby?.zgodne, r = l.liczby?.rozne ?? l.roznice, n = l.liczby?.nieznam ?? l.nie_znam;
+  return { z, r, n };
+};
+function liczby() {
+  const by = s => dec.filter(d => d.status === s).length;
+  const r = D.raport, a = runda(przed), b = runda(po);
+  const pom = r ? (r.pominiete || []).reduce((s, p) => s + (p.ile || 0), 0) : 0;
+  const tileRunda = (t, x, cel) => `<div class="tile"><div class="k">${t}</div><div class="big ${x ? (cel(x) ? 'ok' : 'warn') : 'muted'}">${x ? `${x.z ?? '—'} / ${x.r} / ${x.n}` : '—'}</div><div class="sub">zgodne / różne / nie znam</div></div>`;
+  $('#liczby').innerHTML = `<div class="tiles">
+    ${tileRunda('przed przeniesieniem', a, () => true)}
+    ${tileRunda('po przeniesieniu', b, x => !x.r && !x.n)}
+    <div class="tile"><div class="k">kontrola niezależna</div><div class="big ${kontrola ? (kontrola.ok ? 'ok' : 'bad') : 'muted'}">${kontrola ? `${kontrola.takie_same}/${kontrola.razem}` : '—'}</div><div class="sub">${kontrola ? `prosto ze starych tabel${Object.keys(kontrola.wyjasnione || {}).length ? ` · wyjaśnione: ${Object.entries(kontrola.wyjasnione).map(([d, n]) => `${n} ${d}`).join(', ')}` : ''}` : 'jeszcze nie'}</div></div>
+    <div class="tile"><div class="k">decyzje</div><div class="big">${dec.length}</div><div class="sub">przyjęte ${by('przyjęta')} · odrzucone ${by('odrzucona')} · zastąpione ${by('zastąpiona')}${by('hipoteza') ? ` · <span class="warn">hipotezy ${by('hipoteza')}</span>` : ''}</div></div>
+    <div class="tile"><div class="k">problemy</div><div class="big">${pr.length}</div><div class="sub"><span class="${pr.some(p => !p.wyjasnienie) ? 'bad' : 'ok'}">niewyjaśnione ${pr.filter(p => !p.wyjasnienie).length}</span> · otwarte ${pr.filter(p => p.wyjasnienie?.jak === 'otwarty').length}</div></div>
+    <div class="tile"><div class="k">przeniesienie</div><div class="big">${r ? Object.values(r.przeniesione || {}).reduce((x, y) => x + y, 0) : '—'}</div><div class="sub">${r ? `${esc(Object.entries(r.przeniesione || {}).map(([k, v]) => `${k} ${v}`).join(' · '))}<br>pominięte ${pom}` : 'jeszcze nie'}</div></div>
+  </div>`;
+}
+
+function lejek() {
+  const zap = dec.reduce((s, d) => s + (d.zapytania?.length || 0), 0);
+  const zrodlo = (D.zrodlo.match(/^\| \d+ \|/gm) || []).length;
+  const E = [
+    ['źródło', zrodlo, `${zrodlo} pozycji`],
+    ['zakres 👤', sekcja('Zakres'), `filtr i jednostki`],
+    ['kod', sekcja('Słownik dwóch języków'), `${dec.filter(d => d.podstawa === 'kod').length} hipotez z kodu`],
+    ['dane', zap, `${zap} zapytań`],
+    ['mapowanie', pr.some(p => p.rodzaj === 'układ'), `${pr.filter(p => p.rodzaj === 'układ').length} układów`],
+    ['translator', D.raport, D.raport ? 'raport przeniesienia' : ''],
+    ['różnice', przed || po, `${rundy.length} rund`],
+    ['kontrola', kontrola, kontrola ? `${kontrola.takie_same}/${kontrola.razem}` : ''],
+  ];
+  $('#lejek').innerHTML = E.map(([n, ok, co], i) => `${i ? '<span class="arr">→</span>' : ''}<span class="etap ${ok ? 'done' : ''}"><span class="nr">${i}</span>${n}<span class="co">${ok ? esc(co) : '—'}</span></span>`).join('')
+    + `<p class="muted" style="flex-basis:100%;margin:8px 0 0;font-size:.86rem">👤 tylko na starcie: człowiek wybiera filtr (porcję danych). Mapowanie ustala narzędzie z dowodem w danych; tu je czytasz.</p>`;
+}
+
+let filtr = 'wszystkie';
+function decyzje() {
+  const F = { 'wszystkie': () => true, 'przyjęte': d => d.status === 'przyjęta', 'odrzucone': d => d.status === 'odrzucona', 'zastąpione': d => d.status === 'zastąpiona', 'hipotezy': d => d.status === 'hipoteza', 'wczytane': d => !!d.z_pliku, 'pewność < 90': d => d.pewnosc < 90 };
+  const pokaz = dec.filter(F[filtr]);
+  $('#decyzje').innerHTML = `<h2>⚖️ Decyzje</h2>
+    <p class="muted" style="margin-top:0">Każda decyzja: jak w starym modelu → jak w nowym, dlaczego, skąd (kod, dane), pewność i zapytania z wynikiem. Odrzucone i zastąpione zostają z historią.</p>
+    <div class="filters">${Object.keys(F).filter(f => f === 'wszystkie' || dec.some(F[f])).map(f => `<button class="chip" data-filtr="${f}" aria-pressed="${f === filtr}">${f} (${dec.filter(F[f]).length})</button>`).join('')}</div>
+    <div class="decs">${pokaz.length ? pokaz.map(dCard).join('') : '<p class="muted">Brak decyzji w tym widoku.</p>'}</div>`;
+}
+function dCard(d) {
+  const qs = (d.zapytania || []).map(q => `<div class="q"><div class="k" style="text-transform:none;letter-spacing:0">${esc(q.data || '')} · ${esc(q.cel)}${q.z ? ` · z ${esc(q.z)}` : ''}</div><pre>${esc(q.sql)}</pre><div class="k">wynik</div><pre>${esc(q.wynik)}</pre></div>`).join('');
+  const hist = (d.historia || []).map(h => `${esc(h.data)} ${esc(h.status)} ${h.pewnosc ?? ''}%${h.uwagi ? ' — ' + esc(h.uwagi) : ''}`).join('<br>');
+  const war = (d.warianty || []).map(w => `<li>${inline(typeof w === 'string' ? w : `${w.wariant}${w.skutek ? ` — ${w.skutek}` : ''}`)}</li>`).join('');
+  return `<article class="dec s-${esc((d.status || '').replace('ę', 'e').replace('ą', 'a'))}" id="${esc(d.id)}">
+    <div class="dhead"><span class="did">${esc(d.id)}</span><span class="dob">${esc(d.obszar)}</span><span class="badge ${stCls(d.status)}">${esc(d.status)}</span>
+      <span class="conf" title="pewność"><i><b style="width:${Math.max(0, Math.min(100, d.pewnosc))}%"></b></i>${esc(d.pewnosc)}%</span>
+      ${d.z_pliku ? `<span class="badge" title="wczytana z wcześniejszego mapowania">z ${esc(d.z_pliku.plik)}${d.z_pliku.id ? ' ' + esc(d.z_pliku.id) : ''}</span>` : ''}
+      ${d.zastapiona_przez ? `<span class="k" style="text-transform:none;letter-spacing:0">→ <a href="#${esc(d.zastapiona_przez)}">${esc(d.zastapiona_przez)}</a></span>` : ''}
+      <span class="k" style="margin-left:auto">${esc(d.podstawa)}</span></div>
+    <div class="map"><div><div class="k">stary model</div>${inline(d.stary)}</div><span class="arr">→</span><div><div class="k">nowy model</div>${inline(d.nowy)}</div></div>
+    <div class="ddec">${inline(d.decyzja)}</div><div class="why">${inline(d.dlaczego)}</div>
+    ${war ? `<details><summary>rozważone warianty (${d.warianty.length})</summary><ul>${war}</ul></details>` : ''}
+    <div class="src">źródło: ${esc(d.zrodlo)}</div>
+    ${qs ? `<details><summary>🔎 zapytania (${d.zapytania.length})</summary>${qs}</details>` : `<div class="k warn" style="text-transform:none;letter-spacing:0">bez zapytania do danych${d.bez_zapytania ? ': ' + esc(d.bez_zapytania) : ''}</div>`}
+    ${hist ? `<details><summary>historia</summary><div class="src">${hist}</div></details>` : ''}
+  </article>`;
+}
+
+function problemy() {
+  const decLink = id => `<a href="#${esc(id)}">${esc(id)}</a>`;
+  const grupy = ['układ', 'różnica', 'nie znam', 'niedostępne', 'pominięte', 'kontrola'].map(r => [r, pr.filter(p => p.rodzaj === r)]).filter(([, xs]) => xs.length);
+  $('#problemy').innerHTML = `<h2>🧩 Problemy</h2>${pr.length ? grupy.map(([r, xs]) => `<div class="k" style="margin:10px 0 6px">${esc(r)} (${xs.length})</div><div class="probs">${xs.map(p => `
+    <div class="prob ${p.wyjasnienie && p.wyjasnienie.jak !== 'otwarty' ? 'done' : 'open'}"><div><b>${esc(p.id)}</b> ${inline(p.opis)}${p.ile != null ? ` <span class="badge">${esc(p.ile)}</span>` : ''}</div>
+    ${p.przyklady?.length ? `<details><summary>przykłady (${p.przyklady.length})</summary><pre>${esc(p.przyklady.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join('\n'))}</pre></details>` : ''}
+    <div class="src">${p.wyjasnienie ? (p.wyjasnienie.jak === 'decyzja' ? `wyjaśnione decyzją ${decLink(p.wyjasnienie.decyzja)}` : p.wyjasnienie.jak === 'poprawka' ? `poprawka translatora: ${esc(p.wyjasnienie.opis)}` : p.wyjasnienie.jak === 'do kontroli' ? `do kontroli: ${esc(p.wyjasnienie.opis)}` : p.wyjasnienie.jak === 'sprawdzone' ? `sprawdzone w kontroli: ${esc(p.wyjasnienie.opis)}` : `<span class="bad">otwarte: ${esc(p.wyjasnienie.opis)}</span>`) : '<span class="bad">niewyjaśnione</span>'}${p.historia?.length > 1 ? ` · liczność: ${p.historia.map(h => h.ile).join(' → ')}` : ''}</div></div>`).join('')}</div>`).join('') : '<p class="muted">Jeszcze nic.</p>'}`;
+}
+
+function raport() {
+  const r = D.raport;
+  if (!r) { $('#raport').innerHTML = ''; return; }
+  $('#raport').innerHTML = `<h2>🚚 Przeniesienie</h2><div class="scroll"><table><thead><tr><th>przeniesione</th><th>ile</th></tr></thead><tbody>${Object.entries(r.przeniesione || {}).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</tbody></table></div>
+    <div class="scroll" style="margin-top:10px"><table><thead><tr><th>pominięte — powód</th><th>ile</th><th>decyzja</th><th>przykłady</th></tr></thead><tbody>${(r.pominiete || []).map(p => `<tr><td>${esc(p.powod)}</td><td>${esc(p.ile)}</td><td>${p.decyzja ? `<a href="#${esc(p.decyzja)}">${esc(p.decyzja)}</a>` : '<span class="bad">brak</span>'}</td><td class="src">${esc((p.przyklady || []).join(', '))}</td></tr>`).join('')}</tbody></table></div>
+    ${r.uwagi ? `<p class="muted">${esc(r.uwagi)}</p>` : ''}`;
+}
+
+function rundyWidok() {
+  const l = D.liczby || [];
+  if (!l.length) { $('#rundy').innerHTML = ''; return; }
+  $('#rundy').innerHTML = `<details><summary><h2 style="display:inline">📏 Rundy</h2> <span class="k">${l.length} · liczby.jsonl</span></summary><div class="scroll" style="margin-top:10px"><table><thead><tr><th>kiedy</th><th>runda</th><th>wynik</th></tr></thead><tbody>${l.map(x => `<tr><td class="src">${esc(x.data)}</td><td>${esc(x.runda)}</td><td>${x.typ === 'kontrola' ? `${x.ok ? '✓' : '✗'} ${x.takie_same}/${x.razem} takie same${x.rozne ? `, bez wyjaśnienia ${x.rozne}` : ''}` : `${Object.entries(x.liczby || {}).map(([k, v]) => `${k} ${v}`).join(', ') || '—'} · plik różnic: różnice ${x.roznice}, nie znam ${x.nie_znam}, grup ${x.grupy}`}</td></tr>`).join('')}</tbody></table></div></details>`;
+}
+
+function pliki() {
+  const teksty = [['migracja.md', D.md], ['zrodlo/README.md', D.zrodlo], ...(D.artefakty || []).filter(a => a.tresc !== undefined && !['decyzje.json', 'problemy.json', 'liczby.jsonl'].includes(a.plik)).map(a => [a.plik, a.tresc])].filter(([, t]) => t);
+  $('#pliki').innerHTML = `<h2>📝 Pliki</h2><div class="files">${teksty.map(([n]) => `<button data-plik="${esc(n)}">${esc(n)}</button>`).join('')}</div><div class="card viewer md" id="viewer"></div>`;
+  const pokaz = n => { const t = teksty.find(x => x[0] === n)?.[1] ?? ''; $('#viewer').innerHTML = /\.md$/.test(n) ? md(t) : `<pre>${esc(t)}</pre>`; };
+  if (teksty.length) pokaz(teksty[0][0]); else $('#viewer').innerHTML = '<span class="muted">Jeszcze nic.</span>';
+  $('#pliki').addEventListener('click', e => { const b = e.target.closest('[data-plik]'); if (b) pokaz(b.dataset.plik); });
+}
+
+document.addEventListener('click', e => {
+  const f = e.target.closest('[data-filtr]');
+  if (f) { filtr = f.dataset.filtr; decyzje(); }
+});
+hero(); liczby(); lejek(); decyzje(); problemy(); raport(); rundyWidok(); pliki();
+</script>
