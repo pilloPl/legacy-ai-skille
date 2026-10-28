@@ -1,0 +1,23 @@
+<!-- PRZYKŁAD z jednego przebiegu (campsite-power): pokazuje układ pliku. Treść (skąd, słowniki, decyzje biznesu)
+     bierzesz ze swojej specyfikacji, nie stąd. -->
+# campsite-party — hipoteza: archetyp Party obok legacy
+
+**Czym jest:** prosta implementacja archetypu Party (podmioty, role, relacje) odpowiadająca na pytanie
+„czy karty tego wydawcy działają na kempingu tego słupka”. Stoi obok legacy, za portem
+`io.pillopl.acceptance.CardAcceptance` (campsite-core). To hipoteza do sprawdzenia scenariuszami, nie docelowy model.
+
+**Skąd:** bolączki B1 i B3 z wyniku cel–struktura oraz mapowanie mappera Party (`specyfikacje/<obszar>/zrodlo.md`).
+Gdzie źródło mówi inaczej niż dziś, moduł ma dzisiejsze zachowanie (lista w specyfikacji).
+
+**Mówi językiem:** podmiot (organizacja, jednostka, osoba), rola (operator sieci, wydawca kart, kemping),
+relacja (podgrupa wydawcy, umowa akceptacji), karta wydana przez podmiot, słupek stojący na kempingu.
+
+**Nie mówi językiem legacy:** grupa, drzewo, rodzic, przodek, linia rodziców, poddrzewo, typ grupy (SITE, ISSUER,
+STAFF), lista umów na węźle, prefiks nazwy, atrybut grupy, id grupy. Tych słów tu nie ma i nie ma ich być.
+
+**Zasady:**
+- Nie importuje niczego z `io.pillopl` poza `io.pillopl.value` (typy wartości). Legacy go nie zna; zna go tylko
+  adapter portu w campsite-core.
+- Dane w pamięci; bez persystencji i migracji (to później).
+- Poza modelem (lista mappera): lista kart na słupku, ważność i blokada karty, zajęte gniazdo, budżet mocy, QR,
+  pula kart powitalnych, widoczność rekordów, flagi słupka.
